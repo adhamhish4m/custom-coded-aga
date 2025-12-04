@@ -1,0 +1,1250 @@
+{
+  "name": "internal personalization",
+  "nodes": [
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "826876c3-3076-458a-9514-f5bc12eef523",
+              "name": "First Name",
+              "value": "={{ $('Personalization Sub Workflow').item.json['First Name'] }}",
+              "type": "string"
+            },
+            {
+              "id": "3f243fb7-718a-4166-be66-4f2e6b869cb2",
+              "name": "Last Name",
+              "value": "={{ $('Personalization Sub Workflow').item.json['Last Name'] }}",
+              "type": "string"
+            },
+            {
+              "id": "3626d390-01d5-4482-b9da-a42736d238db",
+              "name": "Email",
+              "value": "={{ $('Personalization Sub Workflow').item.json.Email }}",
+              "type": "string"
+            },
+            {
+              "id": "8d84ba0d-32a4-4a31-8822-ec1cd1e56eef",
+              "name": "Email Quality",
+              "value": "={{ $('Personalization Sub Workflow').item.json['Email Quality'] }}",
+              "type": "string"
+            },
+            {
+              "id": "d87d5992-6a71-4445-be74-829cf93c2a36",
+              "name": "LinkedIn URL",
+              "value": "={{ $('Personalization Sub Workflow').item.json['LinkedIn URL'] }}",
+              "type": "string"
+            },
+            {
+              "id": "0f125d48-4e8b-4c49-8e01-896e87e3d485",
+              "name": "Company",
+              "value": "={{ $('Personalization Sub Workflow').item.json.Company }}",
+              "type": "string"
+            },
+            {
+              "id": "4b64eed3-c566-40c7-b0a9-dc3e0ec15674",
+              "name": "Company URL",
+              "value": "={{ $('Personalization Sub Workflow').item.json['Company URL'] }}",
+              "type": "string"
+            },
+            {
+              "id": "8eb6fa9d-e4a0-4959-b5d8-a34dca8b7583",
+              "name": "Location",
+              "value": "={{ $('Personalization Sub Workflow').item.json.Location }}",
+              "type": "string"
+            },
+            {
+              "id": "a9ce8c1f-18e5-4d33-ad6f-fa68bb911faf",
+              "name": "Company Headcount",
+              "value": "={{ $('Personalization Sub Workflow').item.json['Company Headcount'] }}",
+              "type": "string"
+            },
+            {
+              "id": "ce44aa83-01ee-413f-9039-cadf45bab871",
+              "name": "Company Industry",
+              "value": "={{ $('Personalization Sub Workflow').item.json['Company Industry'] }}",
+              "type": "string"
+            },
+            {
+              "id": "3db00f94-1a3d-4250-84f7-d289042022f3",
+              "name": "Phone Number",
+              "value": "={{ $('Personalization Sub Workflow').item.json['Phone Number'] }}",
+              "type": "string"
+            },
+            {
+              "id": "00fdc383-1a52-4e2e-8921-3a5e9e1a8e64",
+              "name": "Personalized Sentence",
+              "value": "={{ $json.output.personalized_sentence }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -1152,
+        48
+      ],
+      "id": "891ef930-3d22-4a13-b55d-fc0938a22994",
+      "name": "Set Columns"
+    },
+    {
+      "parameters": {
+        "model": "=sonar",
+        "messages": {
+          "message": [
+            {
+              "content": "={{ $('Personalization Sub Workflow').item.json.perplexity_system_prompt }}",
+              "role": "system"
+            },
+            {
+              "content": "={{ $('Personalization Sub Workflow').item.json.perplexity_user_prompt }}"
+            }
+          ]
+        },
+        "simplify": true,
+        "options": {},
+        "requestOptions": {}
+      },
+      "type": "n8n-nodes-base.perplexity",
+      "typeVersion": 1,
+      "position": [
+        -1728,
+        48
+      ],
+      "id": "a6b11e85-9eb2-4b1e-aa62-68da4aa96f45",
+      "name": "Enrich Apollo Leads",
+      "retryOnFail": true,
+      "waitBetweenTries": 2000,
+      "credentials": {
+        "perplexityApi": {
+          "id": "sBcQFr7NPuG7QgTu",
+          "name": "adham 2 perplexity"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "amount": 2
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        -32,
+        176
+      ],
+      "id": "f5d6b227-24b8-4c0a-acf1-a0e34f44da40",
+      "name": "Wait5",
+      "webhookId": "d9b58d01-2062-461b-8046-c34b5dbdbc84",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "3fa9e7ac-50f6-4d58-88cb-7e22840b8d4d",
+              "leftValue": "={{ $json['Personalized Sentence'] }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -928,
+        48
+      ],
+      "id": "1cfa25a1-c172-4490-9f76-b19f167a511a",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "tableId": "campaign_leads",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "id",
+              "condition": "eq",
+              "keyValue": "={{ $('Personalization Sub Workflow').item.json.campaign_leads_id }}"
+            }
+          ]
+        },
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "lead_data",
+              "fieldValue": "={{ \n  (() => {\n    const existingLeads = ($json.lead_data && Array.isArray($json.lead_data)) ? $json.lead_data : [];\n    const newLeads = $('Set Columns').all().map(item => ({\n      \"email\": item.json.Email,\n      \"first_name\": item.json['First Name'],\n      \"last_name\": item.json['Last Name'],\n      \"linkedin_url\": item.json['LinkedIn URL'],\n      \"company_linkedin_url\": item.json['Company LinkedIn URL'],\n      \"company\": item.json.Company,\n      \"company_url\": item.json['Company URL'],\n      \"location\": item.json.Location,\n      \"company_headcount\": item.json['Company Headcount'],\n      \"company_industry\": item.json['Company Industry'],\n      \"phone_number\": item.json['Phone Number'],\n      \"personalized_message\": item.json['Personalized Sentence'],\n      \"enrichment_status\": \"enriched\"\n    }));\n    \n    // Get existing emails to avoid duplicates\n    const existingEmails = new Set(existingLeads.map(lead => lead.email));\n    \n    // Filter out leads that already exist AND skip leads with empty personalized messages\n    const uniqueNewLeads = newLeads.filter(lead => \n      !existingEmails.has(lead.email) && \n      lead.personalized_message && \n      lead.personalized_message.trim() !== ''\n    );\n    \n    // Return combined array\n    return [...existingLeads, ...uniqueNewLeads];\n  })()\n}}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        -480,
+        48
+      ],
+      "id": "7ed074d7-9669-4c83-b780-bc63268c2860",
+      "name": "Update a row5",
+      "executeOnce": false,
+      "credentials": {
+        "supabaseApi": {
+          "id": "VuCbApsfeJXv5SAQ",
+          "name": "Latest AGA"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "tableId": "campaign_leads",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "id",
+              "keyValue": "={{ $('Personalization Sub Workflow').item.json.campaign_leads_id }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        -704,
+        48
+      ],
+      "id": "7d133f3a-1cb4-47a4-b2d8-f27dbb70f645",
+      "name": "Get a row1",
+      "executeOnce": true,
+      "credentials": {
+        "supabaseApi": {
+          "id": "VuCbApsfeJXv5SAQ",
+          "name": "Latest AGA"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "tableId": "campaign_leads",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "id",
+              "keyValue": "={{ $json.campaign_leads_id }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        -2176,
+        -128
+      ],
+      "id": "51cf0d24-f40f-4ecf-b0d7-b7ed2dfb87f1",
+      "name": "Get a row2",
+      "executeOnce": false,
+      "alwaysOutputData": false,
+      "credentials": {
+        "supabaseApi": {
+          "id": "VuCbApsfeJXv5SAQ",
+          "name": "Latest AGA"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "9e462a1e-697b-4043-ab62-f27afdf21e2e",
+              "leftValue": "={{ ($json.lead_data?.length ? $json.lead_data : []).some(lead => lead.email === $('Personalization Sub Workflow').item.json.Email) }}",
+              "rightValue": "false",
+              "operator": {
+                "type": "boolean",
+                "operation": "false",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "or"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        -1952,
+        -128
+      ],
+      "id": "0fa57d2d-e2d9-4c0f-bf9b-7b82aee779f1",
+      "name": "If previously Personalized"
+    },
+    {
+      "parameters": {
+        "model": "anthropic/claude-sonnet-4.5",
+        "options": {
+          "maxTokens": 32768,
+          "temperature": 0.3
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        -1504,
+        272
+      ],
+      "id": "1ecf7ffb-315b-4f14-b025-e1712dca7539",
+      "name": "OpenRouter Chat Model",
+      "credentials": {
+        "openRouterApi": {
+          "id": "f7eGg7hklooof7ec",
+          "name": "adham openrouter"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsonSchemaExample": "{\n\"personalized_sentence\":\"<personalized message>\"\n}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1.3,
+      "position": [
+        -1376,
+        272
+      ],
+      "id": "e98ec0f8-e314-4822-b377-f97748ac78f5",
+      "name": "Structured Output Parser"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $('Personalization Sub Workflow').item.json.claude_user_prompt }}\n\nResearch done on lead (use this):\n{{ $json.message }}",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "={{ $('Personalization Sub Workflow').first().json.claude_system_prompt }}"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2.2,
+      "position": [
+        -1504,
+        48
+      ],
+      "id": "fd307079-1f31-41fa-9d61-a7c957a5a340",
+      "name": "Personalize Outreach1",
+      "retryOnFail": true,
+      "waitBetweenTries": 2000,
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        192,
+        -96
+      ],
+      "id": "3b0b8cb0-0a35-4f21-b6f1-d666c9df21fc",
+      "name": "No Operation, do nothing"
+    },
+    {
+      "parameters": {
+        "inputSource": "passthrough"
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        -2400,
+        -128
+      ],
+      "id": "fb180628-8ae9-4e60-b16b-f3c5cbe2cfe9",
+      "name": "Personalization Sub Workflow"
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "tableId": "campaigns",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "id",
+              "condition": "eq",
+              "keyValue": "={{ $('Personalization Sub Workflow').item.json.campaign_id }}"
+            }
+          ]
+        },
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "completed_count",
+              "fieldValue": "={{ $json.lead_data.length }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        -256,
+        48
+      ],
+      "id": "d7b47d87-f4d5-46fb-8f50-4f443cd1889d",
+      "name": "Update a row",
+      "executeOnce": true,
+      "credentials": {
+        "supabaseApi": {
+          "id": "VuCbApsfeJXv5SAQ",
+          "name": "Latest AGA"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "tableId": "Client Metrics",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "user_auth_id",
+              "keyValue": "={{ $('Personalization Sub Workflow').item.json.user_id }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        -256,
+        -144
+      ],
+      "id": "06e3b116-f225-4300-bcd6-973f16d8b2e8",
+      "name": "Get a row",
+      "executeOnce": true,
+      "credentials": {
+        "supabaseApi": {
+          "id": "VuCbApsfeJXv5SAQ",
+          "name": "Latest AGA"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "tableId": "Client Metrics",
+        "filters": {
+          "conditions": [
+            {
+              "keyName": "user_auth_id",
+              "condition": "eq",
+              "keyValue": "={{ $('Personalization Sub Workflow').item.json.user_id }}"
+            }
+          ]
+        },
+        "fieldsUi": {
+          "fieldValues": [
+            {
+              "fieldId": "num_personalized_leads",
+              "fieldValue": "={{ $json.num_personalized_leads.toNumber() + $('Edit Fields').item.json.num_personalized_messages.toNumber() }}"
+            },
+            {
+              "fieldId": "hours_saved",
+              "fieldValue": "={{ $json.hours_saved + (0.02 * $('Edit Fields').item.json.num_personalized_messages) }}"
+            },
+            {
+              "fieldId": "money_saved",
+              "fieldValue": "={{ Math.ceil($json.money_saved + (0.04 * $('Edit Fields').item.json.num_personalized_messages)) }}"
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.supabase",
+      "typeVersion": 1,
+      "position": [
+        -32,
+        -144
+      ],
+      "id": "14ba63a4-cd54-4281-9e52-e8d4b85421c1",
+      "name": "Update KPIs",
+      "executeOnce": true,
+      "credentials": {
+        "supabaseApi": {
+          "id": "VuCbApsfeJXv5SAQ",
+          "name": "Latest AGA"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "db963f7d-22d5-4d32-a26a-aabd33700a04",
+              "name": "num_personalized_messages",
+              "value": "={{ $input.all().length }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -480,
+        -144
+      ],
+      "id": "b29632c6-30e7-4d9b-b959-824fcdd6e66e",
+      "name": "Edit Fields",
+      "executeOnce": true
+    }
+  ],
+  "pinData": {
+    "Personalization Sub Workflow": [
+      {
+        "json": {
+          "perplexity_system_prompt": "# NDC Research Prompt\r\n\r\nYou are a research assistant finding AI automation opportunities and cybersecurity insights for personalized cold outreach. Focus on identifying pain points, vulnerabilities, and automation potential in the prospect's operations.\r\n\r\nResearch this lead's website and find specific details for personalized outreach. Focus on:\r\n- Recent data breaches or security incidents at their company or direct competitors\r\n- Manual processes that could be automated (scheduling, data entry, customer support, reporting)\r\n- Outdated systems or technology stack vulnerabilities\r\n- Industry-specific cybersecurity threats or compliance requirements (HIPAA, SOC 2, GDPR)\r\n- Customer complaints about slow processes or inefficiencies\r\n- Repetitive workflows mentioned in job postings or company content\r\n- Scale indicators suggesting automation needs (team size, customer volume)\r\n\r\nIf no specific vulnerabilities or automation opportunities are found, focus on:\r\n- Their current tech stack and potential integration opportunities\r\n- Industry-standard automation gaps\r\n- Common cybersecurity risks for their sector\r\n- Growth indicators that typically require system upgrades\r\n\r\n## Output Format\r\n**Company Overview:** [Brief description of what they do and scale]\r\n\r\n**Security/Automation Opportunity:** [Specific vulnerability, breach, or automation gap with context]\r\n\r\n**Industry Context:** [Relevant competitor breaches, industry threats, OR common automation use cases for their sector]\r\n\r\n**Summary:** [1 sentence about the most compelling automation or security need]",
+          "perplexity_user_prompt": "Lead Details:\n\nName: Reuven Lakein\nCompany: TickledPet Pet Treats\nWebsite: http://www.tickledpet.com\nLinkedIn: http://www.linkedin.com/in/reuven-lakein-818b866",
+          "claude_system_prompt": "# NDC Personalization Prompt\r\n\r\n## Task\r\nCreate a personalized icebreaker sentence based on the provided company information. This will be the opening line of a cold outreach email.\r\n\r\n## Main Focus\r\nReference specific security vulnerabilities, automation opportunities, or industry threats from the research. If no specific issues found: comment on their tech stack, growth indicators, or common industry pain points using simple terms.\r\n\r\n## Guidelines\r\n- Use a conversational tone that sounds human and natural\r\n- Keep it short — maximum 25 words\r\n- Write at a grade 6 reading level using simple language\r\n- Do not use em dashes (—) or complex punctuation\r\n- Only write in English\r\n- Do not ask questions or request meetings\r\n- Do not guess, exaggerate, or invent information — only use the data provided\r\n- Paraphrase information rather than copying sentences directly\r\n\r\n## Example\r\nInstead of: \"I noticed your competitors experienced significant data breaches recently, and I wanted to reach out regarding comprehensive cybersecurity solutions that could protect your valuable customer data.\"\r\n\r\nWrite: \"Saw that TechFlow Systems got breached last month and they're in your exact niche — bet that's got you thinking about security upgrades.\"\r\n\r\n## Output Format\r\nReturn only a JSON object with the personalized sentence:\r\n\r\n{\r\n\"personalized_sentence\": \"\"\r\n}\r\n\r\nIf insufficient information is available to create a meaningful personalized sentence, return an empty string.\r\n\r\nIMPORTANT: If you cannot generate a message, return an empty string.",
+          "claude_user_prompt": "Lead Details:\n\nName: Reuven Lakein\nCompany: TickledPet Pet Treats\nWebsite: http://www.tickledpet.com\nLinkedIn: http://www.linkedin.com/in/reuven-lakein-818b866",
+          "campaign_leads_id": "82bd9d28-ea6a-4007-afb3-5185bab11b3f",
+          "campaign_id": "5b63e6ce-4200-4334-b09b-24d2a22a8388",
+          "First Name": "Reuven",
+          "Last Name": "Lakein",
+          "Email": "reuven@tickledpet.com",
+          "LinkedIn URL": "http://www.linkedin.com/in/reuven-lakein-818b866",
+          "Company": "TickledPet Pet Treats",
+          "Company URL": "http://www.tickledpet.com",
+          "user_id": "ba6c9063-b40b-459e-946d-e3896b91fbd8"
+        }
+      },
+      {
+        "json": {
+          "perplexity_system_prompt": "# NDC Research Prompt\r\n\r\nYou are a research assistant finding AI automation opportunities and cybersecurity insights for personalized cold outreach. Focus on identifying pain points, vulnerabilities, and automation potential in the prospect's operations.\r\n\r\nResearch this lead's website and find specific details for personalized outreach. Focus on:\r\n- Recent data breaches or security incidents at their company or direct competitors\r\n- Manual processes that could be automated (scheduling, data entry, customer support, reporting)\r\n- Outdated systems or technology stack vulnerabilities\r\n- Industry-specific cybersecurity threats or compliance requirements (HIPAA, SOC 2, GDPR)\r\n- Customer complaints about slow processes or inefficiencies\r\n- Repetitive workflows mentioned in job postings or company content\r\n- Scale indicators suggesting automation needs (team size, customer volume)\r\n\r\nIf no specific vulnerabilities or automation opportunities are found, focus on:\r\n- Their current tech stack and potential integration opportunities\r\n- Industry-standard automation gaps\r\n- Common cybersecurity risks for their sector\r\n- Growth indicators that typically require system upgrades\r\n\r\n## Output Format\r\n**Company Overview:** [Brief description of what they do and scale]\r\n\r\n**Security/Automation Opportunity:** [Specific vulnerability, breach, or automation gap with context]\r\n\r\n**Industry Context:** [Relevant competitor breaches, industry threats, OR common automation use cases for their sector]\r\n\r\n**Summary:** [1 sentence about the most compelling automation or security need]",
+          "perplexity_user_prompt": "Lead Details:\n\nName: Oles Drobocky\nCompany: Drobocky Orthodontics\nWebsite: http://www.bracesbythebest.com\nLinkedIn: http://www.linkedin.com/in/oles-drobocky-66669512",
+          "claude_system_prompt": "# NDC Personalization Prompt\r\n\r\n## Task\r\nCreate a personalized icebreaker sentence based on the provided company information. This will be the opening line of a cold outreach email.\r\n\r\n## Main Focus\r\nReference specific security vulnerabilities, automation opportunities, or industry threats from the research. If no specific issues found: comment on their tech stack, growth indicators, or common industry pain points using simple terms.\r\n\r\n## Guidelines\r\n- Use a conversational tone that sounds human and natural\r\n- Keep it short — maximum 25 words\r\n- Write at a grade 6 reading level using simple language\r\n- Do not use em dashes (—) or complex punctuation\r\n- Only write in English\r\n- Do not ask questions or request meetings\r\n- Do not guess, exaggerate, or invent information — only use the data provided\r\n- Paraphrase information rather than copying sentences directly\r\n\r\n## Example\r\nInstead of: \"I noticed your competitors experienced significant data breaches recently, and I wanted to reach out regarding comprehensive cybersecurity solutions that could protect your valuable customer data.\"\r\n\r\nWrite: \"Saw that TechFlow Systems got breached last month and they're in your exact niche — bet that's got you thinking about security upgrades.\"\r\n\r\n## Output Format\r\nReturn only a JSON object with the personalized sentence:\r\n\r\n{\r\n\"personalized_sentence\": \"\"\r\n}\r\n\r\nIf insufficient information is available to create a meaningful personalized sentence, return an empty string.\r\n\r\nIMPORTANT: If you cannot generate a message, return an empty string.",
+          "claude_user_prompt": "Lead Details:\n\nName: Oles Drobocky\nCompany: Drobocky Orthodontics\nWebsite: http://www.bracesbythebest.com\nLinkedIn: http://www.linkedin.com/in/oles-drobocky-66669512",
+          "campaign_leads_id": "82bd9d28-ea6a-4007-afb3-5185bab11b3f",
+          "campaign_id": "5b63e6ce-4200-4334-b09b-24d2a22a8388",
+          "First Name": "Oles",
+          "Last Name": "Drobocky",
+          "Email": "oles@bracesbythebest.com",
+          "LinkedIn URL": "http://www.linkedin.com/in/oles-drobocky-66669512",
+          "Company": "Drobocky Orthodontics",
+          "Company URL": "http://www.bracesbythebest.com",
+          "user_id": "ba6c9063-b40b-459e-946d-e3896b91fbd8"
+        }
+      },
+      {
+        "json": {
+          "perplexity_system_prompt": "# NDC Research Prompt\r\n\r\nYou are a research assistant finding AI automation opportunities and cybersecurity insights for personalized cold outreach. Focus on identifying pain points, vulnerabilities, and automation potential in the prospect's operations.\r\n\r\nResearch this lead's website and find specific details for personalized outreach. Focus on:\r\n- Recent data breaches or security incidents at their company or direct competitors\r\n- Manual processes that could be automated (scheduling, data entry, customer support, reporting)\r\n- Outdated systems or technology stack vulnerabilities\r\n- Industry-specific cybersecurity threats or compliance requirements (HIPAA, SOC 2, GDPR)\r\n- Customer complaints about slow processes or inefficiencies\r\n- Repetitive workflows mentioned in job postings or company content\r\n- Scale indicators suggesting automation needs (team size, customer volume)\r\n\r\nIf no specific vulnerabilities or automation opportunities are found, focus on:\r\n- Their current tech stack and potential integration opportunities\r\n- Industry-standard automation gaps\r\n- Common cybersecurity risks for their sector\r\n- Growth indicators that typically require system upgrades\r\n\r\n## Output Format\r\n**Company Overview:** [Brief description of what they do and scale]\r\n\r\n**Security/Automation Opportunity:** [Specific vulnerability, breach, or automation gap with context]\r\n\r\n**Industry Context:** [Relevant competitor breaches, industry threats, OR common automation use cases for their sector]\r\n\r\n**Summary:** [1 sentence about the most compelling automation or security need]",
+          "perplexity_user_prompt": "Lead Details:\n\nName: Chip Jones\nCompany: FoneLogix®\nWebsite: http://www.fonelogix.com\nLinkedIn: http://www.linkedin.com/in/chip-jones-496b571",
+          "claude_system_prompt": "# NDC Personalization Prompt\r\n\r\n## Task\r\nCreate a personalized icebreaker sentence based on the provided company information. This will be the opening line of a cold outreach email.\r\n\r\n## Main Focus\r\nReference specific security vulnerabilities, automation opportunities, or industry threats from the research. If no specific issues found: comment on their tech stack, growth indicators, or common industry pain points using simple terms.\r\n\r\n## Guidelines\r\n- Use a conversational tone that sounds human and natural\r\n- Keep it short — maximum 25 words\r\n- Write at a grade 6 reading level using simple language\r\n- Do not use em dashes (—) or complex punctuation\r\n- Only write in English\r\n- Do not ask questions or request meetings\r\n- Do not guess, exaggerate, or invent information — only use the data provided\r\n- Paraphrase information rather than copying sentences directly\r\n\r\n## Example\r\nInstead of: \"I noticed your competitors experienced significant data breaches recently, and I wanted to reach out regarding comprehensive cybersecurity solutions that could protect your valuable customer data.\"\r\n\r\nWrite: \"Saw that TechFlow Systems got breached last month and they're in your exact niche — bet that's got you thinking about security upgrades.\"\r\n\r\n## Output Format\r\nReturn only a JSON object with the personalized sentence:\r\n\r\n{\r\n\"personalized_sentence\": \"\"\r\n}\r\n\r\nIf insufficient information is available to create a meaningful personalized sentence, return an empty string.\r\n\r\nIMPORTANT: If you cannot generate a message, return an empty string.",
+          "claude_user_prompt": "Lead Details:\n\nName: Chip Jones\nCompany: FoneLogix®\nWebsite: http://www.fonelogix.com\nLinkedIn: http://www.linkedin.com/in/chip-jones-496b571",
+          "campaign_leads_id": "82bd9d28-ea6a-4007-afb3-5185bab11b3f",
+          "campaign_id": "5b63e6ce-4200-4334-b09b-24d2a22a8388",
+          "First Name": "Chip",
+          "Last Name": "Jones",
+          "Email": "cjones@fonelogix.com",
+          "LinkedIn URL": "http://www.linkedin.com/in/chip-jones-496b571",
+          "Company": "FoneLogix®",
+          "Company URL": "http://www.fonelogix.com",
+          "user_id": "ba6c9063-b40b-459e-946d-e3896b91fbd8"
+        }
+      },
+      {
+        "json": {
+          "perplexity_system_prompt": "# NDC Research Prompt\r\n\r\nYou are a research assistant finding AI automation opportunities and cybersecurity insights for personalized cold outreach. Focus on identifying pain points, vulnerabilities, and automation potential in the prospect's operations.\r\n\r\nResearch this lead's website and find specific details for personalized outreach. Focus on:\r\n- Recent data breaches or security incidents at their company or direct competitors\r\n- Manual processes that could be automated (scheduling, data entry, customer support, reporting)\r\n- Outdated systems or technology stack vulnerabilities\r\n- Industry-specific cybersecurity threats or compliance requirements (HIPAA, SOC 2, GDPR)\r\n- Customer complaints about slow processes or inefficiencies\r\n- Repetitive workflows mentioned in job postings or company content\r\n- Scale indicators suggesting automation needs (team size, customer volume)\r\n\r\nIf no specific vulnerabilities or automation opportunities are found, focus on:\r\n- Their current tech stack and potential integration opportunities\r\n- Industry-standard automation gaps\r\n- Common cybersecurity risks for their sector\r\n- Growth indicators that typically require system upgrades\r\n\r\n## Output Format\r\n**Company Overview:** [Brief description of what they do and scale]\r\n\r\n**Security/Automation Opportunity:** [Specific vulnerability, breach, or automation gap with context]\r\n\r\n**Industry Context:** [Relevant competitor breaches, industry threats, OR common automation use cases for their sector]\r\n\r\n**Summary:** [1 sentence about the most compelling automation or security need]",
+          "perplexity_user_prompt": "Lead Details:\n\nName: Marc Delorenzo\nCompany: Gilford Dental\nWebsite: http://www.gilforddental.com\nLinkedIn: http://www.linkedin.com/in/marc-delorenzo-4b5943192",
+          "claude_system_prompt": "# NDC Personalization Prompt\r\n\r\n## Task\r\nCreate a personalized icebreaker sentence based on the provided company information. This will be the opening line of a cold outreach email.\r\n\r\n## Main Focus\r\nReference specific security vulnerabilities, automation opportunities, or industry threats from the research. If no specific issues found: comment on their tech stack, growth indicators, or common industry pain points using simple terms.\r\n\r\n## Guidelines\r\n- Use a conversational tone that sounds human and natural\r\n- Keep it short — maximum 25 words\r\n- Write at a grade 6 reading level using simple language\r\n- Do not use em dashes (—) or complex punctuation\r\n- Only write in English\r\n- Do not ask questions or request meetings\r\n- Do not guess, exaggerate, or invent information — only use the data provided\r\n- Paraphrase information rather than copying sentences directly\r\n\r\n## Example\r\nInstead of: \"I noticed your competitors experienced significant data breaches recently, and I wanted to reach out regarding comprehensive cybersecurity solutions that could protect your valuable customer data.\"\r\n\r\nWrite: \"Saw that TechFlow Systems got breached last month and they're in your exact niche — bet that's got you thinking about security upgrades.\"\r\n\r\n## Output Format\r\nReturn only a JSON object with the personalized sentence:\r\n\r\n{\r\n\"personalized_sentence\": \"\"\r\n}\r\n\r\nIf insufficient information is available to create a meaningful personalized sentence, return an empty string.\r\n\r\nIMPORTANT: If you cannot generate a message, return an empty string.",
+          "claude_user_prompt": "Lead Details:\n\nName: Marc Delorenzo\nCompany: Gilford Dental\nWebsite: http://www.gilforddental.com\nLinkedIn: http://www.linkedin.com/in/marc-delorenzo-4b5943192",
+          "campaign_leads_id": "82bd9d28-ea6a-4007-afb3-5185bab11b3f",
+          "campaign_id": "5b63e6ce-4200-4334-b09b-24d2a22a8388",
+          "First Name": "Marc",
+          "Last Name": "Delorenzo",
+          "Email": "mdelorenzo@gilforddental.com",
+          "LinkedIn URL": "http://www.linkedin.com/in/marc-delorenzo-4b5943192",
+          "Company": "Gilford Dental",
+          "Company URL": "http://www.gilforddental.com",
+          "user_id": "ba6c9063-b40b-459e-946d-e3896b91fbd8"
+        }
+      },
+      {
+        "json": {
+          "perplexity_system_prompt": "# NDC Research Prompt\r\n\r\nYou are a research assistant finding AI automation opportunities and cybersecurity insights for personalized cold outreach. Focus on identifying pain points, vulnerabilities, and automation potential in the prospect's operations.\r\n\r\nResearch this lead's website and find specific details for personalized outreach. Focus on:\r\n- Recent data breaches or security incidents at their company or direct competitors\r\n- Manual processes that could be automated (scheduling, data entry, customer support, reporting)\r\n- Outdated systems or technology stack vulnerabilities\r\n- Industry-specific cybersecurity threats or compliance requirements (HIPAA, SOC 2, GDPR)\r\n- Customer complaints about slow processes or inefficiencies\r\n- Repetitive workflows mentioned in job postings or company content\r\n- Scale indicators suggesting automation needs (team size, customer volume)\r\n\r\nIf no specific vulnerabilities or automation opportunities are found, focus on:\r\n- Their current tech stack and potential integration opportunities\r\n- Industry-standard automation gaps\r\n- Common cybersecurity risks for their sector\r\n- Growth indicators that typically require system upgrades\r\n\r\n## Output Format\r\n**Company Overview:** [Brief description of what they do and scale]\r\n\r\n**Security/Automation Opportunity:** [Specific vulnerability, breach, or automation gap with context]\r\n\r\n**Industry Context:** [Relevant competitor breaches, industry threats, OR common automation use cases for their sector]\r\n\r\n**Summary:** [1 sentence about the most compelling automation or security need]",
+          "perplexity_user_prompt": "Lead Details:\n\nName: Darin Meulebroeck\nCompany: Grand Valley Animal Hospital\nWebsite: http://www.grandvalleyvet.com\nLinkedIn: http://www.linkedin.com/in/darin-meulebroeck-76424b114",
+          "claude_system_prompt": "# NDC Personalization Prompt\r\n\r\n## Task\r\nCreate a personalized icebreaker sentence based on the provided company information. This will be the opening line of a cold outreach email.\r\n\r\n## Main Focus\r\nReference specific security vulnerabilities, automation opportunities, or industry threats from the research. If no specific issues found: comment on their tech stack, growth indicators, or common industry pain points using simple terms.\r\n\r\n## Guidelines\r\n- Use a conversational tone that sounds human and natural\r\n- Keep it short — maximum 25 words\r\n- Write at a grade 6 reading level using simple language\r\n- Do not use em dashes (—) or complex punctuation\r\n- Only write in English\r\n- Do not ask questions or request meetings\r\n- Do not guess, exaggerate, or invent information — only use the data provided\r\n- Paraphrase information rather than copying sentences directly\r\n\r\n## Example\r\nInstead of: \"I noticed your competitors experienced significant data breaches recently, and I wanted to reach out regarding comprehensive cybersecurity solutions that could protect your valuable customer data.\"\r\n\r\nWrite: \"Saw that TechFlow Systems got breached last month and they're in your exact niche — bet that's got you thinking about security upgrades.\"\r\n\r\n## Output Format\r\nReturn only a JSON object with the personalized sentence:\r\n\r\n{\r\n\"personalized_sentence\": \"\"\r\n}\r\n\r\nIf insufficient information is available to create a meaningful personalized sentence, return an empty string.\r\n\r\nIMPORTANT: If you cannot generate a message, return an empty string.",
+          "claude_user_prompt": "Lead Details:\n\nName: Darin Meulebroeck\nCompany: Grand Valley Animal Hospital\nWebsite: http://www.grandvalleyvet.com\nLinkedIn: http://www.linkedin.com/in/darin-meulebroeck-76424b114",
+          "campaign_leads_id": "82bd9d28-ea6a-4007-afb3-5185bab11b3f",
+          "campaign_id": "5b63e6ce-4200-4334-b09b-24d2a22a8388",
+          "First Name": "Darin",
+          "Last Name": "Meulebroeck",
+          "Email": "darinm@grandvalleyvet.com",
+          "LinkedIn URL": "http://www.linkedin.com/in/darin-meulebroeck-76424b114",
+          "Company": "Grand Valley Animal Hospital",
+          "Company URL": "http://www.grandvalleyvet.com",
+          "user_id": "ba6c9063-b40b-459e-946d-e3896b91fbd8"
+        }
+      },
+      {
+        "json": {
+          "perplexity_system_prompt": "# NDC Research Prompt\r\n\r\nYou are a research assistant finding AI automation opportunities and cybersecurity insights for personalized cold outreach. Focus on identifying pain points, vulnerabilities, and automation potential in the prospect's operations.\r\n\r\nResearch this lead's website and find specific details for personalized outreach. Focus on:\r\n- Recent data breaches or security incidents at their company or direct competitors\r\n- Manual processes that could be automated (scheduling, data entry, customer support, reporting)\r\n- Outdated systems or technology stack vulnerabilities\r\n- Industry-specific cybersecurity threats or compliance requirements (HIPAA, SOC 2, GDPR)\r\n- Customer complaints about slow processes or inefficiencies\r\n- Repetitive workflows mentioned in job postings or company content\r\n- Scale indicators suggesting automation needs (team size, customer volume)\r\n\r\nIf no specific vulnerabilities or automation opportunities are found, focus on:\r\n- Their current tech stack and potential integration opportunities\r\n- Industry-standard automation gaps\r\n- Common cybersecurity risks for their sector\r\n- Growth indicators that typically require system upgrades\r\n\r\n## Output Format\r\n**Company Overview:** [Brief description of what they do and scale]\r\n\r\n**Security/Automation Opportunity:** [Specific vulnerability, breach, or automation gap with context]\r\n\r\n**Industry Context:** [Relevant competitor breaches, industry threats, OR common automation use cases for their sector]\r\n\r\n**Summary:** [1 sentence about the most compelling automation or security need]",
+          "perplexity_user_prompt": "Lead Details:\n\nName: Keith Dressler\nCompany: Keith B Dressler Orthodontist\nWebsite: http://www.drdressler.com\nLinkedIn: http://www.linkedin.com/in/keith-dressler-1b494a66",
+          "claude_system_prompt": "# NDC Personalization Prompt\r\n\r\n## Task\r\nCreate a personalized icebreaker sentence based on the provided company information. This will be the opening line of a cold outreach email.\r\n\r\n## Main Focus\r\nReference specific security vulnerabilities, automation opportunities, or industry threats from the research. If no specific issues found: comment on their tech stack, growth indicators, or common industry pain points using simple terms.\r\n\r\n## Guidelines\r\n- Use a conversational tone that sounds human and natural\r\n- Keep it short — maximum 25 words\r\n- Write at a grade 6 reading level using simple language\r\n- Do not use em dashes (—) or complex punctuation\r\n- Only write in English\r\n- Do not ask questions or request meetings\r\n- Do not guess, exaggerate, or invent information — only use the data provided\r\n- Paraphrase information rather than copying sentences directly\r\n\r\n## Example\r\nInstead of: \"I noticed your competitors experienced significant data breaches recently, and I wanted to reach out regarding comprehensive cybersecurity solutions that could protect your valuable customer data.\"\r\n\r\nWrite: \"Saw that TechFlow Systems got breached last month and they're in your exact niche — bet that's got you thinking about security upgrades.\"\r\n\r\n## Output Format\r\nReturn only a JSON object with the personalized sentence:\r\n\r\n{\r\n\"personalized_sentence\": \"\"\r\n}\r\n\r\nIf insufficient information is available to create a meaningful personalized sentence, return an empty string.\r\n\r\nIMPORTANT: If you cannot generate a message, return an empty string.",
+          "claude_user_prompt": "Lead Details:\n\nName: Keith Dressler\nCompany: Keith B Dressler Orthodontist\nWebsite: http://www.drdressler.com\nLinkedIn: http://www.linkedin.com/in/keith-dressler-1b494a66",
+          "campaign_leads_id": "82bd9d28-ea6a-4007-afb3-5185bab11b3f",
+          "campaign_id": "5b63e6ce-4200-4334-b09b-24d2a22a8388",
+          "First Name": "Keith",
+          "Last Name": "Dressler",
+          "Email": "keithdressler@drdressler.com",
+          "LinkedIn URL": "http://www.linkedin.com/in/keith-dressler-1b494a66",
+          "Company": "Keith B Dressler Orthodontist",
+          "Company URL": "http://www.drdressler.com",
+          "user_id": "ba6c9063-b40b-459e-946d-e3896b91fbd8"
+        }
+      },
+      {
+        "json": {
+          "perplexity_system_prompt": "# NDC Research Prompt\r\n\r\nYou are a research assistant finding AI automation opportunities and cybersecurity insights for personalized cold outreach. Focus on identifying pain points, vulnerabilities, and automation potential in the prospect's operations.\r\n\r\nResearch this lead's website and find specific details for personalized outreach. Focus on:\r\n- Recent data breaches or security incidents at their company or direct competitors\r\n- Manual processes that could be automated (scheduling, data entry, customer support, reporting)\r\n- Outdated systems or technology stack vulnerabilities\r\n- Industry-specific cybersecurity threats or compliance requirements (HIPAA, SOC 2, GDPR)\r\n- Customer complaints about slow processes or inefficiencies\r\n- Repetitive workflows mentioned in job postings or company content\r\n- Scale indicators suggesting automation needs (team size, customer volume)\r\n\r\nIf no specific vulnerabilities or automation opportunities are found, focus on:\r\n- Their current tech stack and potential integration opportunities\r\n- Industry-standard automation gaps\r\n- Common cybersecurity risks for their sector\r\n- Growth indicators that typically require system upgrades\r\n\r\n## Output Format\r\n**Company Overview:** [Brief description of what they do and scale]\r\n\r\n**Security/Automation Opportunity:** [Specific vulnerability, breach, or automation gap with context]\r\n\r\n**Industry Context:** [Relevant competitor breaches, industry threats, OR common automation use cases for their sector]\r\n\r\n**Summary:** [1 sentence about the most compelling automation or security need]",
+          "perplexity_user_prompt": "Lead Details:\n\nName: Liz Miller\nCompany: Liz Miller Agency Inc\nWebsite: http://www.lizmilleragency.com\nLinkedIn: http://www.linkedin.com/in/lizmillertx",
+          "claude_system_prompt": "# NDC Personalization Prompt\r\n\r\n## Task\r\nCreate a personalized icebreaker sentence based on the provided company information. This will be the opening line of a cold outreach email.\r\n\r\n## Main Focus\r\nReference specific security vulnerabilities, automation opportunities, or industry threats from the research. If no specific issues found: comment on their tech stack, growth indicators, or common industry pain points using simple terms.\r\n\r\n## Guidelines\r\n- Use a conversational tone that sounds human and natural\r\n- Keep it short — maximum 25 words\r\n- Write at a grade 6 reading level using simple language\r\n- Do not use em dashes (—) or complex punctuation\r\n- Only write in English\r\n- Do not ask questions or request meetings\r\n- Do not guess, exaggerate, or invent information — only use the data provided\r\n- Paraphrase information rather than copying sentences directly\r\n\r\n## Example\r\nInstead of: \"I noticed your competitors experienced significant data breaches recently, and I wanted to reach out regarding comprehensive cybersecurity solutions that could protect your valuable customer data.\"\r\n\r\nWrite: \"Saw that TechFlow Systems got breached last month and they're in your exact niche — bet that's got you thinking about security upgrades.\"\r\n\r\n## Output Format\r\nReturn only a JSON object with the personalized sentence:\r\n\r\n{\r\n\"personalized_sentence\": \"\"\r\n}\r\n\r\nIf insufficient information is available to create a meaningful personalized sentence, return an empty string.\r\n\r\nIMPORTANT: If you cannot generate a message, return an empty string.",
+          "claude_user_prompt": "Lead Details:\n\nName: Liz Miller\nCompany: Liz Miller Agency Inc\nWebsite: http://www.lizmilleragency.com\nLinkedIn: http://www.linkedin.com/in/lizmillertx",
+          "campaign_leads_id": "82bd9d28-ea6a-4007-afb3-5185bab11b3f",
+          "campaign_id": "5b63e6ce-4200-4334-b09b-24d2a22a8388",
+          "First Name": "Liz",
+          "Last Name": "Miller",
+          "Email": "liz@lizmilleragency.com",
+          "LinkedIn URL": "http://www.linkedin.com/in/lizmillertx",
+          "Company": "Liz Miller Agency Inc",
+          "Company URL": "http://www.lizmilleragency.com",
+          "user_id": "ba6c9063-b40b-459e-946d-e3896b91fbd8"
+        }
+      },
+      {
+        "json": {
+          "perplexity_system_prompt": "# NDC Research Prompt\r\n\r\nYou are a research assistant finding AI automation opportunities and cybersecurity insights for personalized cold outreach. Focus on identifying pain points, vulnerabilities, and automation potential in the prospect's operations.\r\n\r\nResearch this lead's website and find specific details for personalized outreach. Focus on:\r\n- Recent data breaches or security incidents at their company or direct competitors\r\n- Manual processes that could be automated (scheduling, data entry, customer support, reporting)\r\n- Outdated systems or technology stack vulnerabilities\r\n- Industry-specific cybersecurity threats or compliance requirements (HIPAA, SOC 2, GDPR)\r\n- Customer complaints about slow processes or inefficiencies\r\n- Repetitive workflows mentioned in job postings or company content\r\n- Scale indicators suggesting automation needs (team size, customer volume)\r\n\r\nIf no specific vulnerabilities or automation opportunities are found, focus on:\r\n- Their current tech stack and potential integration opportunities\r\n- Industry-standard automation gaps\r\n- Common cybersecurity risks for their sector\r\n- Growth indicators that typically require system upgrades\r\n\r\n## Output Format\r\n**Company Overview:** [Brief description of what they do and scale]\r\n\r\n**Security/Automation Opportunity:** [Specific vulnerability, breach, or automation gap with context]\r\n\r\n**Industry Context:** [Relevant competitor breaches, industry threats, OR common automation use cases for their sector]\r\n\r\n**Summary:** [1 sentence about the most compelling automation or security need]",
+          "perplexity_user_prompt": "Lead Details:\n\nName: Frederick Chereshansky\nCompany: CADent Lab LLC\nWebsite: http://www.cadentlab.com\nLinkedIn: http://www.linkedin.com/in/frederickc",
+          "claude_system_prompt": "# NDC Personalization Prompt\r\n\r\n## Task\r\nCreate a personalized icebreaker sentence based on the provided company information. This will be the opening line of a cold outreach email.\r\n\r\n## Main Focus\r\nReference specific security vulnerabilities, automation opportunities, or industry threats from the research. If no specific issues found: comment on their tech stack, growth indicators, or common industry pain points using simple terms.\r\n\r\n## Guidelines\r\n- Use a conversational tone that sounds human and natural\r\n- Keep it short — maximum 25 words\r\n- Write at a grade 6 reading level using simple language\r\n- Do not use em dashes (—) or complex punctuation\r\n- Only write in English\r\n- Do not ask questions or request meetings\r\n- Do not guess, exaggerate, or invent information — only use the data provided\r\n- Paraphrase information rather than copying sentences directly\r\n\r\n## Example\r\nInstead of: \"I noticed your competitors experienced significant data breaches recently, and I wanted to reach out regarding comprehensive cybersecurity solutions that could protect your valuable customer data.\"\r\n\r\nWrite: \"Saw that TechFlow Systems got breached last month and they're in your exact niche — bet that's got you thinking about security upgrades.\"\r\n\r\n## Output Format\r\nReturn only a JSON object with the personalized sentence:\r\n\r\n{\r\n\"personalized_sentence\": \"\"\r\n}\r\n\r\nIf insufficient information is available to create a meaningful personalized sentence, return an empty string.\r\n\r\nIMPORTANT: If you cannot generate a message, return an empty string.",
+          "claude_user_prompt": "Lead Details:\n\nName: Frederick Chereshansky\nCompany: CADent Lab LLC\nWebsite: http://www.cadentlab.com\nLinkedIn: http://www.linkedin.com/in/frederickc",
+          "campaign_leads_id": "82bd9d28-ea6a-4007-afb3-5185bab11b3f",
+          "campaign_id": "5b63e6ce-4200-4334-b09b-24d2a22a8388",
+          "First Name": "Frederick",
+          "Last Name": "Chereshansky",
+          "Email": "frederick@cadentlab.com",
+          "LinkedIn URL": "http://www.linkedin.com/in/frederickc",
+          "Company": "CADent Lab LLC",
+          "Company URL": "http://www.cadentlab.com",
+          "user_id": "ba6c9063-b40b-459e-946d-e3896b91fbd8"
+        }
+      },
+      {
+        "json": {
+          "perplexity_system_prompt": "# NDC Research Prompt\r\n\r\nYou are a research assistant finding AI automation opportunities and cybersecurity insights for personalized cold outreach. Focus on identifying pain points, vulnerabilities, and automation potential in the prospect's operations.\r\n\r\nResearch this lead's website and find specific details for personalized outreach. Focus on:\r\n- Recent data breaches or security incidents at their company or direct competitors\r\n- Manual processes that could be automated (scheduling, data entry, customer support, reporting)\r\n- Outdated systems or technology stack vulnerabilities\r\n- Industry-specific cybersecurity threats or compliance requirements (HIPAA, SOC 2, GDPR)\r\n- Customer complaints about slow processes or inefficiencies\r\n- Repetitive workflows mentioned in job postings or company content\r\n- Scale indicators suggesting automation needs (team size, customer volume)\r\n\r\nIf no specific vulnerabilities or automation opportunities are found, focus on:\r\n- Their current tech stack and potential integration opportunities\r\n- Industry-standard automation gaps\r\n- Common cybersecurity risks for their sector\r\n- Growth indicators that typically require system upgrades\r\n\r\n## Output Format\r\n**Company Overview:** [Brief description of what they do and scale]\r\n\r\n**Security/Automation Opportunity:** [Specific vulnerability, breach, or automation gap with context]\r\n\r\n**Industry Context:** [Relevant competitor breaches, industry threats, OR common automation use cases for their sector]\r\n\r\n**Summary:** [1 sentence about the most compelling automation or security need]",
+          "perplexity_user_prompt": "Lead Details:\n\nName: Eric Forsberg\nCompany: Altoona Smiles\nWebsite: http://www.altoonasmiles.com\nLinkedIn: http://www.linkedin.com/in/eric-forsberg-4a5a17101",
+          "claude_system_prompt": "# NDC Personalization Prompt\r\n\r\n## Task\r\nCreate a personalized icebreaker sentence based on the provided company information. This will be the opening line of a cold outreach email.\r\n\r\n## Main Focus\r\nReference specific security vulnerabilities, automation opportunities, or industry threats from the research. If no specific issues found: comment on their tech stack, growth indicators, or common industry pain points using simple terms.\r\n\r\n## Guidelines\r\n- Use a conversational tone that sounds human and natural\r\n- Keep it short — maximum 25 words\r\n- Write at a grade 6 reading level using simple language\r\n- Do not use em dashes (—) or complex punctuation\r\n- Only write in English\r\n- Do not ask questions or request meetings\r\n- Do not guess, exaggerate, or invent information — only use the data provided\r\n- Paraphrase information rather than copying sentences directly\r\n\r\n## Example\r\nInstead of: \"I noticed your competitors experienced significant data breaches recently, and I wanted to reach out regarding comprehensive cybersecurity solutions that could protect your valuable customer data.\"\r\n\r\nWrite: \"Saw that TechFlow Systems got breached last month and they're in your exact niche — bet that's got you thinking about security upgrades.\"\r\n\r\n## Output Format\r\nReturn only a JSON object with the personalized sentence:\r\n\r\n{\r\n\"personalized_sentence\": \"\"\r\n}\r\n\r\nIf insufficient information is available to create a meaningful personalized sentence, return an empty string.\r\n\r\nIMPORTANT: If you cannot generate a message, return an empty string.",
+          "claude_user_prompt": "Lead Details:\n\nName: Eric Forsberg\nCompany: Altoona Smiles\nWebsite: http://www.altoonasmiles.com\nLinkedIn: http://www.linkedin.com/in/eric-forsberg-4a5a17101",
+          "campaign_leads_id": "82bd9d28-ea6a-4007-afb3-5185bab11b3f",
+          "campaign_id": "5b63e6ce-4200-4334-b09b-24d2a22a8388",
+          "First Name": "Eric",
+          "Last Name": "Forsberg",
+          "Email": "eric@altoonasmiles.com",
+          "LinkedIn URL": "http://www.linkedin.com/in/eric-forsberg-4a5a17101",
+          "Company": "Altoona Smiles",
+          "Company URL": "http://www.altoonasmiles.com",
+          "user_id": "ba6c9063-b40b-459e-946d-e3896b91fbd8"
+        }
+      },
+      {
+        "json": {
+          "perplexity_system_prompt": "# NDC Research Prompt\r\n\r\nYou are a research assistant finding AI automation opportunities and cybersecurity insights for personalized cold outreach. Focus on identifying pain points, vulnerabilities, and automation potential in the prospect's operations.\r\n\r\nResearch this lead's website and find specific details for personalized outreach. Focus on:\r\n- Recent data breaches or security incidents at their company or direct competitors\r\n- Manual processes that could be automated (scheduling, data entry, customer support, reporting)\r\n- Outdated systems or technology stack vulnerabilities\r\n- Industry-specific cybersecurity threats or compliance requirements (HIPAA, SOC 2, GDPR)\r\n- Customer complaints about slow processes or inefficiencies\r\n- Repetitive workflows mentioned in job postings or company content\r\n- Scale indicators suggesting automation needs (team size, customer volume)\r\n\r\nIf no specific vulnerabilities or automation opportunities are found, focus on:\r\n- Their current tech stack and potential integration opportunities\r\n- Industry-standard automation gaps\r\n- Common cybersecurity risks for their sector\r\n- Growth indicators that typically require system upgrades\r\n\r\n## Output Format\r\n**Company Overview:** [Brief description of what they do and scale]\r\n\r\n**Security/Automation Opportunity:** [Specific vulnerability, breach, or automation gap with context]\r\n\r\n**Industry Context:** [Relevant competitor breaches, industry threats, OR common automation use cases for their sector]\r\n\r\n**Summary:** [1 sentence about the most compelling automation or security need]",
+          "perplexity_user_prompt": "Lead Details:\n\nName: Devon Halberg\nCompany: Larson Dental\nWebsite: http://www.larsondental.net\nLinkedIn: http://www.linkedin.com/in/devon-halberg-54825415",
+          "claude_system_prompt": "# NDC Personalization Prompt\r\n\r\n## Task\r\nCreate a personalized icebreaker sentence based on the provided company information. This will be the opening line of a cold outreach email.\r\n\r\n## Main Focus\r\nReference specific security vulnerabilities, automation opportunities, or industry threats from the research. If no specific issues found: comment on their tech stack, growth indicators, or common industry pain points using simple terms.\r\n\r\n## Guidelines\r\n- Use a conversational tone that sounds human and natural\r\n- Keep it short — maximum 25 words\r\n- Write at a grade 6 reading level using simple language\r\n- Do not use em dashes (—) or complex punctuation\r\n- Only write in English\r\n- Do not ask questions or request meetings\r\n- Do not guess, exaggerate, or invent information — only use the data provided\r\n- Paraphrase information rather than copying sentences directly\r\n\r\n## Example\r\nInstead of: \"I noticed your competitors experienced significant data breaches recently, and I wanted to reach out regarding comprehensive cybersecurity solutions that could protect your valuable customer data.\"\r\n\r\nWrite: \"Saw that TechFlow Systems got breached last month and they're in your exact niche — bet that's got you thinking about security upgrades.\"\r\n\r\n## Output Format\r\nReturn only a JSON object with the personalized sentence:\r\n\r\n{\r\n\"personalized_sentence\": \"\"\r\n}\r\n\r\nIf insufficient information is available to create a meaningful personalized sentence, return an empty string.\r\n\r\nIMPORTANT: If you cannot generate a message, return an empty string.",
+          "claude_user_prompt": "Lead Details:\n\nName: Devon Halberg\nCompany: Larson Dental\nWebsite: http://www.larsondental.net\nLinkedIn: http://www.linkedin.com/in/devon-halberg-54825415",
+          "campaign_leads_id": "82bd9d28-ea6a-4007-afb3-5185bab11b3f",
+          "campaign_id": "5b63e6ce-4200-4334-b09b-24d2a22a8388",
+          "First Name": "Devon",
+          "Last Name": "Halberg",
+          "Email": "devon@larsondental.net",
+          "LinkedIn URL": "http://www.linkedin.com/in/devon-halberg-54825415",
+          "Company": "Larson Dental",
+          "Company URL": "http://www.larsondental.net",
+          "user_id": "ba6c9063-b40b-459e-946d-e3896b91fbd8"
+        }
+      },
+      {
+        "json": {
+          "perplexity_system_prompt": "# NDC Research Prompt\r\n\r\nYou are a research assistant finding AI automation opportunities and cybersecurity insights for personalized cold outreach. Focus on identifying pain points, vulnerabilities, and automation potential in the prospect's operations.\r\n\r\nResearch this lead's website and find specific details for personalized outreach. Focus on:\r\n- Recent data breaches or security incidents at their company or direct competitors\r\n- Manual processes that could be automated (scheduling, data entry, customer support, reporting)\r\n- Outdated systems or technology stack vulnerabilities\r\n- Industry-specific cybersecurity threats or compliance requirements (HIPAA, SOC 2, GDPR)\r\n- Customer complaints about slow processes or inefficiencies\r\n- Repetitive workflows mentioned in job postings or company content\r\n- Scale indicators suggesting automation needs (team size, customer volume)\r\n\r\nIf no specific vulnerabilities or automation opportunities are found, focus on:\r\n- Their current tech stack and potential integration opportunities\r\n- Industry-standard automation gaps\r\n- Common cybersecurity risks for their sector\r\n- Growth indicators that typically require system upgrades\r\n\r\n## Output Format\r\n**Company Overview:** [Brief description of what they do and scale]\r\n\r\n**Security/Automation Opportunity:** [Specific vulnerability, breach, or automation gap with context]\r\n\r\n**Industry Context:** [Relevant competitor breaches, industry threats, OR common automation use cases for their sector]\r\n\r\n**Summary:** [1 sentence about the most compelling automation or security need]",
+          "perplexity_user_prompt": "Lead Details:\n\nName: Gene Keeton\nCompany: Quimidrol Odonto\nWebsite: http://www.kdent.com.br\nLinkedIn: http://www.linkedin.com/in/gene-keeton-b2a9461b",
+          "claude_system_prompt": "# NDC Personalization Prompt\r\n\r\n## Task\r\nCreate a personalized icebreaker sentence based on the provided company information. This will be the opening line of a cold outreach email.\r\n\r\n## Main Focus\r\nReference specific security vulnerabilities, automation opportunities, or industry threats from the research. If no specific issues found: comment on their tech stack, growth indicators, or common industry pain points using simple terms.\r\n\r\n## Guidelines\r\n- Use a conversational tone that sounds human and natural\r\n- Keep it short — maximum 25 words\r\n- Write at a grade 6 reading level using simple language\r\n- Do not use em dashes (—) or complex punctuation\r\n- Only write in English\r\n- Do not ask questions or request meetings\r\n- Do not guess, exaggerate, or invent information — only use the data provided\r\n- Paraphrase information rather than copying sentences directly\r\n\r\n## Example\r\nInstead of: \"I noticed your competitors experienced significant data breaches recently, and I wanted to reach out regarding comprehensive cybersecurity solutions that could protect your valuable customer data.\"\r\n\r\nWrite: \"Saw that TechFlow Systems got breached last month and they're in your exact niche — bet that's got you thinking about security upgrades.\"\r\n\r\n## Output Format\r\nReturn only a JSON object with the personalized sentence:\r\n\r\n{\r\n\"personalized_sentence\": \"\"\r\n}\r\n\r\nIf insufficient information is available to create a meaningful personalized sentence, return an empty string.\r\n\r\nIMPORTANT: If you cannot generate a message, return an empty string.",
+          "claude_user_prompt": "Lead Details:\n\nName: Gene Keeton\nCompany: Quimidrol Odonto\nWebsite: http://www.kdent.com.br\nLinkedIn: http://www.linkedin.com/in/gene-keeton-b2a9461b",
+          "campaign_leads_id": "82bd9d28-ea6a-4007-afb3-5185bab11b3f",
+          "campaign_id": "5b63e6ce-4200-4334-b09b-24d2a22a8388",
+          "First Name": "Gene",
+          "Last Name": "Keeton",
+          "Email": "gene@kdent.com",
+          "LinkedIn URL": "http://www.linkedin.com/in/gene-keeton-b2a9461b",
+          "Company": "Quimidrol Odonto",
+          "Company URL": "http://www.kdent.com.br",
+          "user_id": "ba6c9063-b40b-459e-946d-e3896b91fbd8"
+        }
+      },
+      {
+        "json": {
+          "perplexity_system_prompt": "# NDC Research Prompt\r\n\r\nYou are a research assistant finding AI automation opportunities and cybersecurity insights for personalized cold outreach. Focus on identifying pain points, vulnerabilities, and automation potential in the prospect's operations.\r\n\r\nResearch this lead's website and find specific details for personalized outreach. Focus on:\r\n- Recent data breaches or security incidents at their company or direct competitors\r\n- Manual processes that could be automated (scheduling, data entry, customer support, reporting)\r\n- Outdated systems or technology stack vulnerabilities\r\n- Industry-specific cybersecurity threats or compliance requirements (HIPAA, SOC 2, GDPR)\r\n- Customer complaints about slow processes or inefficiencies\r\n- Repetitive workflows mentioned in job postings or company content\r\n- Scale indicators suggesting automation needs (team size, customer volume)\r\n\r\nIf no specific vulnerabilities or automation opportunities are found, focus on:\r\n- Their current tech stack and potential integration opportunities\r\n- Industry-standard automation gaps\r\n- Common cybersecurity risks for their sector\r\n- Growth indicators that typically require system upgrades\r\n\r\n## Output Format\r\n**Company Overview:** [Brief description of what they do and scale]\r\n\r\n**Security/Automation Opportunity:** [Specific vulnerability, breach, or automation gap with context]\r\n\r\n**Industry Context:** [Relevant competitor breaches, industry threats, OR common automation use cases for their sector]\r\n\r\n**Summary:** [1 sentence about the most compelling automation or security need]",
+          "perplexity_user_prompt": "Lead Details:\n\nName: Jahan Farin\nCompany: Paradigm Design Solutions | Dental Surgery & Practice Design\nWebsite: http://www.paradigm-group.co.uk\nLinkedIn: http://www.linkedin.com/in/jahan-farin-63534821",
+          "claude_system_prompt": "# NDC Personalization Prompt\r\n\r\n## Task\r\nCreate a personalized icebreaker sentence based on the provided company information. This will be the opening line of a cold outreach email.\r\n\r\n## Main Focus\r\nReference specific security vulnerabilities, automation opportunities, or industry threats from the research. If no specific issues found: comment on their tech stack, growth indicators, or common industry pain points using simple terms.\r\n\r\n## Guidelines\r\n- Use a conversational tone that sounds human and natural\r\n- Keep it short — maximum 25 words\r\n- Write at a grade 6 reading level using simple language\r\n- Do not use em dashes (—) or complex punctuation\r\n- Only write in English\r\n- Do not ask questions or request meetings\r\n- Do not guess, exaggerate, or invent information — only use the data provided\r\n- Paraphrase information rather than copying sentences directly\r\n\r\n## Example\r\nInstead of: \"I noticed your competitors experienced significant data breaches recently, and I wanted to reach out regarding comprehensive cybersecurity solutions that could protect your valuable customer data.\"\r\n\r\nWrite: \"Saw that TechFlow Systems got breached last month and they're in your exact niche — bet that's got you thinking about security upgrades.\"\r\n\r\n## Output Format\r\nReturn only a JSON object with the personalized sentence:\r\n\r\n{\r\n\"personalized_sentence\": \"\"\r\n}\r\n\r\nIf insufficient information is available to create a meaningful personalized sentence, return an empty string.\r\n\r\nIMPORTANT: If you cannot generate a message, return an empty string.",
+          "claude_user_prompt": "Lead Details:\n\nName: Jahan Farin\nCompany: Paradigm Design Solutions | Dental Surgery & Practice Design\nWebsite: http://www.paradigm-group.co.uk\nLinkedIn: http://www.linkedin.com/in/jahan-farin-63534821",
+          "campaign_leads_id": "82bd9d28-ea6a-4007-afb3-5185bab11b3f",
+          "campaign_id": "5b63e6ce-4200-4334-b09b-24d2a22a8388",
+          "First Name": "Jahan",
+          "Last Name": "Farin",
+          "Email": "jahan@pdsprojects.com",
+          "LinkedIn URL": "http://www.linkedin.com/in/jahan-farin-63534821",
+          "Company": "Paradigm Design Solutions | Dental Surgery & Practice Design",
+          "Company URL": "http://www.paradigm-group.co.uk",
+          "user_id": "ba6c9063-b40b-459e-946d-e3896b91fbd8"
+        }
+      },
+      {
+        "json": {
+          "perplexity_system_prompt": "# NDC Research Prompt\r\n\r\nYou are a research assistant finding AI automation opportunities and cybersecurity insights for personalized cold outreach. Focus on identifying pain points, vulnerabilities, and automation potential in the prospect's operations.\r\n\r\nResearch this lead's website and find specific details for personalized outreach. Focus on:\r\n- Recent data breaches or security incidents at their company or direct competitors\r\n- Manual processes that could be automated (scheduling, data entry, customer support, reporting)\r\n- Outdated systems or technology stack vulnerabilities\r\n- Industry-specific cybersecurity threats or compliance requirements (HIPAA, SOC 2, GDPR)\r\n- Customer complaints about slow processes or inefficiencies\r\n- Repetitive workflows mentioned in job postings or company content\r\n- Scale indicators suggesting automation needs (team size, customer volume)\r\n\r\nIf no specific vulnerabilities or automation opportunities are found, focus on:\r\n- Their current tech stack and potential integration opportunities\r\n- Industry-standard automation gaps\r\n- Common cybersecurity risks for their sector\r\n- Growth indicators that typically require system upgrades\r\n\r\n## Output Format\r\n**Company Overview:** [Brief description of what they do and scale]\r\n\r\n**Security/Automation Opportunity:** [Specific vulnerability, breach, or automation gap with context]\r\n\r\n**Industry Context:** [Relevant competitor breaches, industry threats, OR common automation use cases for their sector]\r\n\r\n**Summary:** [1 sentence about the most compelling automation or security need]",
+          "perplexity_user_prompt": "Lead Details:\n\nName: Sue Berube\nCompany: Eaton & Berube Insurance Agency\nWebsite: http://www.eatonberube.com\nLinkedIn: http://www.linkedin.com/in/sue-berube-1a489a18",
+          "claude_system_prompt": "# NDC Personalization Prompt\r\n\r\n## Task\r\nCreate a personalized icebreaker sentence based on the provided company information. This will be the opening line of a cold outreach email.\r\n\r\n## Main Focus\r\nReference specific security vulnerabilities, automation opportunities, or industry threats from the research. If no specific issues found: comment on their tech stack, growth indicators, or common industry pain points using simple terms.\r\n\r\n## Guidelines\r\n- Use a conversational tone that sounds human and natural\r\n- Keep it short — maximum 25 words\r\n- Write at a grade 6 reading level using simple language\r\n- Do not use em dashes (—) or complex punctuation\r\n- Only write in English\r\n- Do not ask questions or request meetings\r\n- Do not guess, exaggerate, or invent information — only use the data provided\r\n- Paraphrase information rather than copying sentences directly\r\n\r\n## Example\r\nInstead of: \"I noticed your competitors experienced significant data breaches recently, and I wanted to reach out regarding comprehensive cybersecurity solutions that could protect your valuable customer data.\"\r\n\r\nWrite: \"Saw that TechFlow Systems got breached last month and they're in your exact niche — bet that's got you thinking about security upgrades.\"\r\n\r\n## Output Format\r\nReturn only a JSON object with the personalized sentence:\r\n\r\n{\r\n\"personalized_sentence\": \"\"\r\n}\r\n\r\nIf insufficient information is available to create a meaningful personalized sentence, return an empty string.\r\n\r\nIMPORTANT: If you cannot generate a message, return an empty string.",
+          "claude_user_prompt": "Lead Details:\n\nName: Sue Berube\nCompany: Eaton & Berube Insurance Agency\nWebsite: http://www.eatonberube.com\nLinkedIn: http://www.linkedin.com/in/sue-berube-1a489a18",
+          "campaign_leads_id": "82bd9d28-ea6a-4007-afb3-5185bab11b3f",
+          "campaign_id": "5b63e6ce-4200-4334-b09b-24d2a22a8388",
+          "First Name": "Sue",
+          "Last Name": "Berube",
+          "Email": "sberube@eatonberube.com",
+          "LinkedIn URL": "http://www.linkedin.com/in/sue-berube-1a489a18",
+          "Company": "Eaton & Berube Insurance Agency",
+          "Company URL": "http://www.eatonberube.com",
+          "user_id": "ba6c9063-b40b-459e-946d-e3896b91fbd8"
+        }
+      },
+      {
+        "json": {
+          "perplexity_system_prompt": "# NDC Research Prompt\r\n\r\nYou are a research assistant finding AI automation opportunities and cybersecurity insights for personalized cold outreach. Focus on identifying pain points, vulnerabilities, and automation potential in the prospect's operations.\r\n\r\nResearch this lead's website and find specific details for personalized outreach. Focus on:\r\n- Recent data breaches or security incidents at their company or direct competitors\r\n- Manual processes that could be automated (scheduling, data entry, customer support, reporting)\r\n- Outdated systems or technology stack vulnerabilities\r\n- Industry-specific cybersecurity threats or compliance requirements (HIPAA, SOC 2, GDPR)\r\n- Customer complaints about slow processes or inefficiencies\r\n- Repetitive workflows mentioned in job postings or company content\r\n- Scale indicators suggesting automation needs (team size, customer volume)\r\n\r\nIf no specific vulnerabilities or automation opportunities are found, focus on:\r\n- Their current tech stack and potential integration opportunities\r\n- Industry-standard automation gaps\r\n- Common cybersecurity risks for their sector\r\n- Growth indicators that typically require system upgrades\r\n\r\n## Output Format\r\n**Company Overview:** [Brief description of what they do and scale]\r\n\r\n**Security/Automation Opportunity:** [Specific vulnerability, breach, or automation gap with context]\r\n\r\n**Industry Context:** [Relevant competitor breaches, industry threats, OR common automation use cases for their sector]\r\n\r\n**Summary:** [1 sentence about the most compelling automation or security need]",
+          "perplexity_user_prompt": "Lead Details:\n\nName: Kelli Ostrander\nCompany: Senior Insurance Solutions\nWebsite: http://www.medicare.one\nLinkedIn: http://www.linkedin.com/in/kelli-callihan-ostrander-38b6ab50",
+          "claude_system_prompt": "# NDC Personalization Prompt\r\n\r\n## Task\r\nCreate a personalized icebreaker sentence based on the provided company information. This will be the opening line of a cold outreach email.\r\n\r\n## Main Focus\r\nReference specific security vulnerabilities, automation opportunities, or industry threats from the research. If no specific issues found: comment on their tech stack, growth indicators, or common industry pain points using simple terms.\r\n\r\n## Guidelines\r\n- Use a conversational tone that sounds human and natural\r\n- Keep it short — maximum 25 words\r\n- Write at a grade 6 reading level using simple language\r\n- Do not use em dashes (—) or complex punctuation\r\n- Only write in English\r\n- Do not ask questions or request meetings\r\n- Do not guess, exaggerate, or invent information — only use the data provided\r\n- Paraphrase information rather than copying sentences directly\r\n\r\n## Example\r\nInstead of: \"I noticed your competitors experienced significant data breaches recently, and I wanted to reach out regarding comprehensive cybersecurity solutions that could protect your valuable customer data.\"\r\n\r\nWrite: \"Saw that TechFlow Systems got breached last month and they're in your exact niche — bet that's got you thinking about security upgrades.\"\r\n\r\n## Output Format\r\nReturn only a JSON object with the personalized sentence:\r\n\r\n{\r\n\"personalized_sentence\": \"\"\r\n}\r\n\r\nIf insufficient information is available to create a meaningful personalized sentence, return an empty string.\r\n\r\nIMPORTANT: If you cannot generate a message, return an empty string.",
+          "claude_user_prompt": "Lead Details:\n\nName: Kelli Ostrander\nCompany: Senior Insurance Solutions\nWebsite: http://www.medicare.one\nLinkedIn: http://www.linkedin.com/in/kelli-callihan-ostrander-38b6ab50",
+          "campaign_leads_id": "82bd9d28-ea6a-4007-afb3-5185bab11b3f",
+          "campaign_id": "5b63e6ce-4200-4334-b09b-24d2a22a8388",
+          "First Name": "Kelli",
+          "Last Name": "Ostrander",
+          "Email": "kelli@seniorinsurancesolutions.us",
+          "LinkedIn URL": "http://www.linkedin.com/in/kelli-callihan-ostrander-38b6ab50",
+          "Company": "Senior Insurance Solutions",
+          "Company URL": "http://www.medicare.one",
+          "user_id": "ba6c9063-b40b-459e-946d-e3896b91fbd8"
+        }
+      },
+      {
+        "json": {
+          "perplexity_system_prompt": "# NDC Research Prompt\r\n\r\nYou are a research assistant finding AI automation opportunities and cybersecurity insights for personalized cold outreach. Focus on identifying pain points, vulnerabilities, and automation potential in the prospect's operations.\r\n\r\nResearch this lead's website and find specific details for personalized outreach. Focus on:\r\n- Recent data breaches or security incidents at their company or direct competitors\r\n- Manual processes that could be automated (scheduling, data entry, customer support, reporting)\r\n- Outdated systems or technology stack vulnerabilities\r\n- Industry-specific cybersecurity threats or compliance requirements (HIPAA, SOC 2, GDPR)\r\n- Customer complaints about slow processes or inefficiencies\r\n- Repetitive workflows mentioned in job postings or company content\r\n- Scale indicators suggesting automation needs (team size, customer volume)\r\n\r\nIf no specific vulnerabilities or automation opportunities are found, focus on:\r\n- Their current tech stack and potential integration opportunities\r\n- Industry-standard automation gaps\r\n- Common cybersecurity risks for their sector\r\n- Growth indicators that typically require system upgrades\r\n\r\n## Output Format\r\n**Company Overview:** [Brief description of what they do and scale]\r\n\r\n**Security/Automation Opportunity:** [Specific vulnerability, breach, or automation gap with context]\r\n\r\n**Industry Context:** [Relevant competitor breaches, industry threats, OR common automation use cases for their sector]\r\n\r\n**Summary:** [1 sentence about the most compelling automation or security need]",
+          "perplexity_user_prompt": "Lead Details:\n\nName: Forrest Westley\nCompany: PURE Compounding Rx\nWebsite: http://www.pure-compounding.com\nLinkedIn: http://www.linkedin.com/in/forrest-westley-1401017",
+          "claude_system_prompt": "# NDC Personalization Prompt\r\n\r\n## Task\r\nCreate a personalized icebreaker sentence based on the provided company information. This will be the opening line of a cold outreach email.\r\n\r\n## Main Focus\r\nReference specific security vulnerabilities, automation opportunities, or industry threats from the research. If no specific issues found: comment on their tech stack, growth indicators, or common industry pain points using simple terms.\r\n\r\n## Guidelines\r\n- Use a conversational tone that sounds human and natural\r\n- Keep it short — maximum 25 words\r\n- Write at a grade 6 reading level using simple language\r\n- Do not use em dashes (—) or complex punctuation\r\n- Only write in English\r\n- Do not ask questions or request meetings\r\n- Do not guess, exaggerate, or invent information — only use the data provided\r\n- Paraphrase information rather than copying sentences directly\r\n\r\n## Example\r\nInstead of: \"I noticed your competitors experienced significant data breaches recently, and I wanted to reach out regarding comprehensive cybersecurity solutions that could protect your valuable customer data.\"\r\n\r\nWrite: \"Saw that TechFlow Systems got breached last month and they're in your exact niche — bet that's got you thinking about security upgrades.\"\r\n\r\n## Output Format\r\nReturn only a JSON object with the personalized sentence:\r\n\r\n{\r\n\"personalized_sentence\": \"\"\r\n}\r\n\r\nIf insufficient information is available to create a meaningful personalized sentence, return an empty string.\r\n\r\nIMPORTANT: If you cannot generate a message, return an empty string.",
+          "claude_user_prompt": "Lead Details:\n\nName: Forrest Westley\nCompany: PURE Compounding Rx\nWebsite: http://www.pure-compounding.com\nLinkedIn: http://www.linkedin.com/in/forrest-westley-1401017",
+          "campaign_leads_id": "82bd9d28-ea6a-4007-afb3-5185bab11b3f",
+          "campaign_id": "5b63e6ce-4200-4334-b09b-24d2a22a8388",
+          "First Name": "Forrest",
+          "Last Name": "Westley",
+          "Email": "forrest@pure-compounding.com",
+          "LinkedIn URL": "http://www.linkedin.com/in/forrest-westley-1401017",
+          "Company": "PURE Compounding Rx",
+          "Company URL": "http://www.pure-compounding.com",
+          "user_id": "ba6c9063-b40b-459e-946d-e3896b91fbd8"
+        }
+      },
+      {
+        "json": {
+          "perplexity_system_prompt": "# NDC Research Prompt\r\n\r\nYou are a research assistant finding AI automation opportunities and cybersecurity insights for personalized cold outreach. Focus on identifying pain points, vulnerabilities, and automation potential in the prospect's operations.\r\n\r\nResearch this lead's website and find specific details for personalized outreach. Focus on:\r\n- Recent data breaches or security incidents at their company or direct competitors\r\n- Manual processes that could be automated (scheduling, data entry, customer support, reporting)\r\n- Outdated systems or technology stack vulnerabilities\r\n- Industry-specific cybersecurity threats or compliance requirements (HIPAA, SOC 2, GDPR)\r\n- Customer complaints about slow processes or inefficiencies\r\n- Repetitive workflows mentioned in job postings or company content\r\n- Scale indicators suggesting automation needs (team size, customer volume)\r\n\r\nIf no specific vulnerabilities or automation opportunities are found, focus on:\r\n- Their current tech stack and potential integration opportunities\r\n- Industry-standard automation gaps\r\n- Common cybersecurity risks for their sector\r\n- Growth indicators that typically require system upgrades\r\n\r\n## Output Format\r\n**Company Overview:** [Brief description of what they do and scale]\r\n\r\n**Security/Automation Opportunity:** [Specific vulnerability, breach, or automation gap with context]\r\n\r\n**Industry Context:** [Relevant competitor breaches, industry threats, OR common automation use cases for their sector]\r\n\r\n**Summary:** [1 sentence about the most compelling automation or security need]",
+          "perplexity_user_prompt": "Lead Details:\n\nName: Ben Oblander\nCompany: Revolvadent\nWebsite: http://www.revolvadent.com\nLinkedIn: http://www.linkedin.com/in/ben-oblander-bb94b22b",
+          "claude_system_prompt": "# NDC Personalization Prompt\r\n\r\n## Task\r\nCreate a personalized icebreaker sentence based on the provided company information. This will be the opening line of a cold outreach email.\r\n\r\n## Main Focus\r\nReference specific security vulnerabilities, automation opportunities, or industry threats from the research. If no specific issues found: comment on their tech stack, growth indicators, or common industry pain points using simple terms.\r\n\r\n## Guidelines\r\n- Use a conversational tone that sounds human and natural\r\n- Keep it short — maximum 25 words\r\n- Write at a grade 6 reading level using simple language\r\n- Do not use em dashes (—) or complex punctuation\r\n- Only write in English\r\n- Do not ask questions or request meetings\r\n- Do not guess, exaggerate, or invent information — only use the data provided\r\n- Paraphrase information rather than copying sentences directly\r\n\r\n## Example\r\nInstead of: \"I noticed your competitors experienced significant data breaches recently, and I wanted to reach out regarding comprehensive cybersecurity solutions that could protect your valuable customer data.\"\r\n\r\nWrite: \"Saw that TechFlow Systems got breached last month and they're in your exact niche — bet that's got you thinking about security upgrades.\"\r\n\r\n## Output Format\r\nReturn only a JSON object with the personalized sentence:\r\n\r\n{\r\n\"personalized_sentence\": \"\"\r\n}\r\n\r\nIf insufficient information is available to create a meaningful personalized sentence, return an empty string.\r\n\r\nIMPORTANT: If you cannot generate a message, return an empty string.",
+          "claude_user_prompt": "Lead Details:\n\nName: Ben Oblander\nCompany: Revolvadent\nWebsite: http://www.revolvadent.com\nLinkedIn: http://www.linkedin.com/in/ben-oblander-bb94b22b",
+          "campaign_leads_id": "82bd9d28-ea6a-4007-afb3-5185bab11b3f",
+          "campaign_id": "5b63e6ce-4200-4334-b09b-24d2a22a8388",
+          "First Name": "Ben",
+          "Last Name": "Oblander",
+          "Email": "ben.oblander@revolvadent.com",
+          "LinkedIn URL": "http://www.linkedin.com/in/ben-oblander-bb94b22b",
+          "Company": "Revolvadent",
+          "Company URL": "http://www.revolvadent.com",
+          "user_id": "ba6c9063-b40b-459e-946d-e3896b91fbd8"
+        }
+      },
+      {
+        "json": {
+          "perplexity_system_prompt": "# NDC Research Prompt\r\n\r\nYou are a research assistant finding AI automation opportunities and cybersecurity insights for personalized cold outreach. Focus on identifying pain points, vulnerabilities, and automation potential in the prospect's operations.\r\n\r\nResearch this lead's website and find specific details for personalized outreach. Focus on:\r\n- Recent data breaches or security incidents at their company or direct competitors\r\n- Manual processes that could be automated (scheduling, data entry, customer support, reporting)\r\n- Outdated systems or technology stack vulnerabilities\r\n- Industry-specific cybersecurity threats or compliance requirements (HIPAA, SOC 2, GDPR)\r\n- Customer complaints about slow processes or inefficiencies\r\n- Repetitive workflows mentioned in job postings or company content\r\n- Scale indicators suggesting automation needs (team size, customer volume)\r\n\r\nIf no specific vulnerabilities or automation opportunities are found, focus on:\r\n- Their current tech stack and potential integration opportunities\r\n- Industry-standard automation gaps\r\n- Common cybersecurity risks for their sector\r\n- Growth indicators that typically require system upgrades\r\n\r\n## Output Format\r\n**Company Overview:** [Brief description of what they do and scale]\r\n\r\n**Security/Automation Opportunity:** [Specific vulnerability, breach, or automation gap with context]\r\n\r\n**Industry Context:** [Relevant competitor breaches, industry threats, OR common automation use cases for their sector]\r\n\r\n**Summary:** [1 sentence about the most compelling automation or security need]",
+          "perplexity_user_prompt": "Lead Details:\n\nName: Cody Baird\nCompany: ADMEN\nWebsite: http://www.admen.com\nLinkedIn: http://www.linkedin.com/in/codybaird",
+          "claude_system_prompt": "# NDC Personalization Prompt\r\n\r\n## Task\r\nCreate a personalized icebreaker sentence based on the provided company information. This will be the opening line of a cold outreach email.\r\n\r\n## Main Focus\r\nReference specific security vulnerabilities, automation opportunities, or industry threats from the research. If no specific issues found: comment on their tech stack, growth indicators, or common industry pain points using simple terms.\r\n\r\n## Guidelines\r\n- Use a conversational tone that sounds human and natural\r\n- Keep it short — maximum 25 words\r\n- Write at a grade 6 reading level using simple language\r\n- Do not use em dashes (—) or complex punctuation\r\n- Only write in English\r\n- Do not ask questions or request meetings\r\n- Do not guess, exaggerate, or invent information — only use the data provided\r\n- Paraphrase information rather than copying sentences directly\r\n\r\n## Example\r\nInstead of: \"I noticed your competitors experienced significant data breaches recently, and I wanted to reach out regarding comprehensive cybersecurity solutions that could protect your valuable customer data.\"\r\n\r\nWrite: \"Saw that TechFlow Systems got breached last month and they're in your exact niche — bet that's got you thinking about security upgrades.\"\r\n\r\n## Output Format\r\nReturn only a JSON object with the personalized sentence:\r\n\r\n{\r\n\"personalized_sentence\": \"\"\r\n}\r\n\r\nIf insufficient information is available to create a meaningful personalized sentence, return an empty string.\r\n\r\nIMPORTANT: If you cannot generate a message, return an empty string.",
+          "claude_user_prompt": "Lead Details:\n\nName: Cody Baird\nCompany: ADMEN\nWebsite: http://www.admen.com\nLinkedIn: http://www.linkedin.com/in/codybaird",
+          "campaign_leads_id": "82bd9d28-ea6a-4007-afb3-5185bab11b3f",
+          "campaign_id": "5b63e6ce-4200-4334-b09b-24d2a22a8388",
+          "First Name": "Cody",
+          "Last Name": "Baird",
+          "Email": "cody@admen.com",
+          "LinkedIn URL": "http://www.linkedin.com/in/codybaird",
+          "Company": "ADMEN",
+          "Company URL": "http://www.admen.com",
+          "user_id": "ba6c9063-b40b-459e-946d-e3896b91fbd8"
+        }
+      },
+      {
+        "json": {
+          "perplexity_system_prompt": "# NDC Research Prompt\r\n\r\nYou are a research assistant finding AI automation opportunities and cybersecurity insights for personalized cold outreach. Focus on identifying pain points, vulnerabilities, and automation potential in the prospect's operations.\r\n\r\nResearch this lead's website and find specific details for personalized outreach. Focus on:\r\n- Recent data breaches or security incidents at their company or direct competitors\r\n- Manual processes that could be automated (scheduling, data entry, customer support, reporting)\r\n- Outdated systems or technology stack vulnerabilities\r\n- Industry-specific cybersecurity threats or compliance requirements (HIPAA, SOC 2, GDPR)\r\n- Customer complaints about slow processes or inefficiencies\r\n- Repetitive workflows mentioned in job postings or company content\r\n- Scale indicators suggesting automation needs (team size, customer volume)\r\n\r\nIf no specific vulnerabilities or automation opportunities are found, focus on:\r\n- Their current tech stack and potential integration opportunities\r\n- Industry-standard automation gaps\r\n- Common cybersecurity risks for their sector\r\n- Growth indicators that typically require system upgrades\r\n\r\n## Output Format\r\n**Company Overview:** [Brief description of what they do and scale]\r\n\r\n**Security/Automation Opportunity:** [Specific vulnerability, breach, or automation gap with context]\r\n\r\n**Industry Context:** [Relevant competitor breaches, industry threats, OR common automation use cases for their sector]\r\n\r\n**Summary:** [1 sentence about the most compelling automation or security need]",
+          "perplexity_user_prompt": "Lead Details:\n\nName: Gloria Clarke\nCompany: Greenbriar Dental Care\nWebsite: http://www.greenbriardentalcare.com\nLinkedIn: http://www.linkedin.com/in/gloria-clarke-77a91923",
+          "claude_system_prompt": "# NDC Personalization Prompt\r\n\r\n## Task\r\nCreate a personalized icebreaker sentence based on the provided company information. This will be the opening line of a cold outreach email.\r\n\r\n## Main Focus\r\nReference specific security vulnerabilities, automation opportunities, or industry threats from the research. If no specific issues found: comment on their tech stack, growth indicators, or common industry pain points using simple terms.\r\n\r\n## Guidelines\r\n- Use a conversational tone that sounds human and natural\r\n- Keep it short — maximum 25 words\r\n- Write at a grade 6 reading level using simple language\r\n- Do not use em dashes (—) or complex punctuation\r\n- Only write in English\r\n- Do not ask questions or request meetings\r\n- Do not guess, exaggerate, or invent information — only use the data provided\r\n- Paraphrase information rather than copying sentences directly\r\n\r\n## Example\r\nInstead of: \"I noticed your competitors experienced significant data breaches recently, and I wanted to reach out regarding comprehensive cybersecurity solutions that could protect your valuable customer data.\"\r\n\r\nWrite: \"Saw that TechFlow Systems got breached last month and they're in your exact niche — bet that's got you thinking about security upgrades.\"\r\n\r\n## Output Format\r\nReturn only a JSON object with the personalized sentence:\r\n\r\n{\r\n\"personalized_sentence\": \"\"\r\n}\r\n\r\nIf insufficient information is available to create a meaningful personalized sentence, return an empty string.\r\n\r\nIMPORTANT: If you cannot generate a message, return an empty string.",
+          "claude_user_prompt": "Lead Details:\n\nName: Gloria Clarke\nCompany: Greenbriar Dental Care\nWebsite: http://www.greenbriardentalcare.com\nLinkedIn: http://www.linkedin.com/in/gloria-clarke-77a91923",
+          "campaign_leads_id": "82bd9d28-ea6a-4007-afb3-5185bab11b3f",
+          "campaign_id": "5b63e6ce-4200-4334-b09b-24d2a22a8388",
+          "First Name": "Gloria",
+          "Last Name": "Clarke",
+          "Email": "gclarke@greenbriardentalcare.com",
+          "LinkedIn URL": "http://www.linkedin.com/in/gloria-clarke-77a91923",
+          "Company": "Greenbriar Dental Care",
+          "Company URL": "http://www.greenbriardentalcare.com",
+          "user_id": "ba6c9063-b40b-459e-946d-e3896b91fbd8"
+        }
+      },
+      {
+        "json": {
+          "perplexity_system_prompt": "# NDC Research Prompt\r\n\r\nYou are a research assistant finding AI automation opportunities and cybersecurity insights for personalized cold outreach. Focus on identifying pain points, vulnerabilities, and automation potential in the prospect's operations.\r\n\r\nResearch this lead's website and find specific details for personalized outreach. Focus on:\r\n- Recent data breaches or security incidents at their company or direct competitors\r\n- Manual processes that could be automated (scheduling, data entry, customer support, reporting)\r\n- Outdated systems or technology stack vulnerabilities\r\n- Industry-specific cybersecurity threats or compliance requirements (HIPAA, SOC 2, GDPR)\r\n- Customer complaints about slow processes or inefficiencies\r\n- Repetitive workflows mentioned in job postings or company content\r\n- Scale indicators suggesting automation needs (team size, customer volume)\r\n\r\nIf no specific vulnerabilities or automation opportunities are found, focus on:\r\n- Their current tech stack and potential integration opportunities\r\n- Industry-standard automation gaps\r\n- Common cybersecurity risks for their sector\r\n- Growth indicators that typically require system upgrades\r\n\r\n## Output Format\r\n**Company Overview:** [Brief description of what they do and scale]\r\n\r\n**Security/Automation Opportunity:** [Specific vulnerability, breach, or automation gap with context]\r\n\r\n**Industry Context:** [Relevant competitor breaches, industry threats, OR common automation use cases for their sector]\r\n\r\n**Summary:** [1 sentence about the most compelling automation or security need]",
+          "perplexity_user_prompt": "Lead Details:\n\nName: Daniel Westbrook\nCompany: Westbrook Carpentry & Millwork\nWebsite: http://www.builttowithstand.com\nLinkedIn: http://www.linkedin.com/in/daniel-westbrook-99abbb52",
+          "claude_system_prompt": "# NDC Personalization Prompt\r\n\r\n## Task\r\nCreate a personalized icebreaker sentence based on the provided company information. This will be the opening line of a cold outreach email.\r\n\r\n## Main Focus\r\nReference specific security vulnerabilities, automation opportunities, or industry threats from the research. If no specific issues found: comment on their tech stack, growth indicators, or common industry pain points using simple terms.\r\n\r\n## Guidelines\r\n- Use a conversational tone that sounds human and natural\r\n- Keep it short — maximum 25 words\r\n- Write at a grade 6 reading level using simple language\r\n- Do not use em dashes (—) or complex punctuation\r\n- Only write in English\r\n- Do not ask questions or request meetings\r\n- Do not guess, exaggerate, or invent information — only use the data provided\r\n- Paraphrase information rather than copying sentences directly\r\n\r\n## Example\r\nInstead of: \"I noticed your competitors experienced significant data breaches recently, and I wanted to reach out regarding comprehensive cybersecurity solutions that could protect your valuable customer data.\"\r\n\r\nWrite: \"Saw that TechFlow Systems got breached last month and they're in your exact niche — bet that's got you thinking about security upgrades.\"\r\n\r\n## Output Format\r\nReturn only a JSON object with the personalized sentence:\r\n\r\n{\r\n\"personalized_sentence\": \"\"\r\n}\r\n\r\nIf insufficient information is available to create a meaningful personalized sentence, return an empty string.\r\n\r\nIMPORTANT: If you cannot generate a message, return an empty string.",
+          "claude_user_prompt": "Lead Details:\n\nName: Daniel Westbrook\nCompany: Westbrook Carpentry & Millwork\nWebsite: http://www.builttowithstand.com\nLinkedIn: http://www.linkedin.com/in/daniel-westbrook-99abbb52",
+          "campaign_leads_id": "82bd9d28-ea6a-4007-afb3-5185bab11b3f",
+          "campaign_id": "5b63e6ce-4200-4334-b09b-24d2a22a8388",
+          "First Name": "Daniel",
+          "Last Name": "Westbrook",
+          "Email": "daniel.westbrook@builttowithstand.com",
+          "LinkedIn URL": "http://www.linkedin.com/in/daniel-westbrook-99abbb52",
+          "Company": "Westbrook Carpentry & Millwork",
+          "Company URL": "http://www.builttowithstand.com",
+          "user_id": "ba6c9063-b40b-459e-946d-e3896b91fbd8"
+        }
+      },
+      {
+        "json": {
+          "perplexity_system_prompt": "# NDC Research Prompt\r\n\r\nYou are a research assistant finding AI automation opportunities and cybersecurity insights for personalized cold outreach. Focus on identifying pain points, vulnerabilities, and automation potential in the prospect's operations.\r\n\r\nResearch this lead's website and find specific details for personalized outreach. Focus on:\r\n- Recent data breaches or security incidents at their company or direct competitors\r\n- Manual processes that could be automated (scheduling, data entry, customer support, reporting)\r\n- Outdated systems or technology stack vulnerabilities\r\n- Industry-specific cybersecurity threats or compliance requirements (HIPAA, SOC 2, GDPR)\r\n- Customer complaints about slow processes or inefficiencies\r\n- Repetitive workflows mentioned in job postings or company content\r\n- Scale indicators suggesting automation needs (team size, customer volume)\r\n\r\nIf no specific vulnerabilities or automation opportunities are found, focus on:\r\n- Their current tech stack and potential integration opportunities\r\n- Industry-standard automation gaps\r\n- Common cybersecurity risks for their sector\r\n- Growth indicators that typically require system upgrades\r\n\r\n## Output Format\r\n**Company Overview:** [Brief description of what they do and scale]\r\n\r\n**Security/Automation Opportunity:** [Specific vulnerability, breach, or automation gap with context]\r\n\r\n**Industry Context:** [Relevant competitor breaches, industry threats, OR common automation use cases for their sector]\r\n\r\n**Summary:** [1 sentence about the most compelling automation or security need]",
+          "perplexity_user_prompt": "Lead Details:\n\nName: Summer Friesen\nCompany: Friesen Agency\nWebsite: http://www.friesenagency.com\nLinkedIn: http://www.linkedin.com/in/summer-friesen",
+          "claude_system_prompt": "# NDC Personalization Prompt\r\n\r\n## Task\r\nCreate a personalized icebreaker sentence based on the provided company information. This will be the opening line of a cold outreach email.\r\n\r\n## Main Focus\r\nReference specific security vulnerabilities, automation opportunities, or industry threats from the research. If no specific issues found: comment on their tech stack, growth indicators, or common industry pain points using simple terms.\r\n\r\n## Guidelines\r\n- Use a conversational tone that sounds human and natural\r\n- Keep it short — maximum 25 words\r\n- Write at a grade 6 reading level using simple language\r\n- Do not use em dashes (—) or complex punctuation\r\n- Only write in English\r\n- Do not ask questions or request meetings\r\n- Do not guess, exaggerate, or invent information — only use the data provided\r\n- Paraphrase information rather than copying sentences directly\r\n\r\n## Example\r\nInstead of: \"I noticed your competitors experienced significant data breaches recently, and I wanted to reach out regarding comprehensive cybersecurity solutions that could protect your valuable customer data.\"\r\n\r\nWrite: \"Saw that TechFlow Systems got breached last month and they're in your exact niche — bet that's got you thinking about security upgrades.\"\r\n\r\n## Output Format\r\nReturn only a JSON object with the personalized sentence:\r\n\r\n{\r\n\"personalized_sentence\": \"\"\r\n}\r\n\r\nIf insufficient information is available to create a meaningful personalized sentence, return an empty string.\r\n\r\nIMPORTANT: If you cannot generate a message, return an empty string.",
+          "claude_user_prompt": "Lead Details:\n\nName: Summer Friesen\nCompany: Friesen Agency\nWebsite: http://www.friesenagency.com\nLinkedIn: http://www.linkedin.com/in/summer-friesen",
+          "campaign_leads_id": "82bd9d28-ea6a-4007-afb3-5185bab11b3f",
+          "campaign_id": "5b63e6ce-4200-4334-b09b-24d2a22a8388",
+          "First Name": "Summer",
+          "Last Name": "Friesen",
+          "Email": "summer@friesenagency.com",
+          "LinkedIn URL": "http://www.linkedin.com/in/summer-friesen",
+          "Company": "Friesen Agency",
+          "Company URL": "http://www.friesenagency.com",
+          "user_id": "ba6c9063-b40b-459e-946d-e3896b91fbd8"
+        }
+      },
+      {
+        "json": {
+          "perplexity_system_prompt": "# NDC Research Prompt\r\n\r\nYou are a research assistant finding AI automation opportunities and cybersecurity insights for personalized cold outreach. Focus on identifying pain points, vulnerabilities, and automation potential in the prospect's operations.\r\n\r\nResearch this lead's website and find specific details for personalized outreach. Focus on:\r\n- Recent data breaches or security incidents at their company or direct competitors\r\n- Manual processes that could be automated (scheduling, data entry, customer support, reporting)\r\n- Outdated systems or technology stack vulnerabilities\r\n- Industry-specific cybersecurity threats or compliance requirements (HIPAA, SOC 2, GDPR)\r\n- Customer complaints about slow processes or inefficiencies\r\n- Repetitive workflows mentioned in job postings or company content\r\n- Scale indicators suggesting automation needs (team size, customer volume)\r\n\r\nIf no specific vulnerabilities or automation opportunities are found, focus on:\r\n- Their current tech stack and potential integration opportunities\r\n- Industry-standard automation gaps\r\n- Common cybersecurity risks for their sector\r\n- Growth indicators that typically require system upgrades\r\n\r\n## Output Format\r\n**Company Overview:** [Brief description of what they do and scale]\r\n\r\n**Security/Automation Opportunity:** [Specific vulnerability, breach, or automation gap with context]\r\n\r\n**Industry Context:** [Relevant competitor breaches, industry threats, OR common automation use cases for their sector]\r\n\r\n**Summary:** [1 sentence about the most compelling automation or security need]",
+          "perplexity_user_prompt": "Lead Details:\n\nName: Dennis Stites\nCompany: Stites Dental Care\nWebsite: http://www.stitesdentalcare.com\nLinkedIn: http://www.linkedin.com/in/dennis-stites-dds-650b6012a",
+          "claude_system_prompt": "# NDC Personalization Prompt\r\n\r\n## Task\r\nCreate a personalized icebreaker sentence based on the provided company information. This will be the opening line of a cold outreach email.\r\n\r\n## Main Focus\r\nReference specific security vulnerabilities, automation opportunities, or industry threats from the research. If no specific issues found: comment on their tech stack, growth indicators, or common industry pain points using simple terms.\r\n\r\n## Guidelines\r\n- Use a conversational tone that sounds human and natural\r\n- Keep it short — maximum 25 words\r\n- Write at a grade 6 reading level using simple language\r\n- Do not use em dashes (—) or complex punctuation\r\n- Only write in English\r\n- Do not ask questions or request meetings\r\n- Do not guess, exaggerate, or invent information — only use the data provided\r\n- Paraphrase information rather than copying sentences directly\r\n\r\n## Example\r\nInstead of: \"I noticed your competitors experienced significant data breaches recently, and I wanted to reach out regarding comprehensive cybersecurity solutions that could protect your valuable customer data.\"\r\n\r\nWrite: \"Saw that TechFlow Systems got breached last month and they're in your exact niche — bet that's got you thinking about security upgrades.\"\r\n\r\n## Output Format\r\nReturn only a JSON object with the personalized sentence:\r\n\r\n{\r\n\"personalized_sentence\": \"\"\r\n}\r\n\r\nIf insufficient information is available to create a meaningful personalized sentence, return an empty string.\r\n\r\nIMPORTANT: If you cannot generate a message, return an empty string.",
+          "claude_user_prompt": "Lead Details:\n\nName: Dennis Stites\nCompany: Stites Dental Care\nWebsite: http://www.stitesdentalcare.com\nLinkedIn: http://www.linkedin.com/in/dennis-stites-dds-650b6012a",
+          "campaign_leads_id": "82bd9d28-ea6a-4007-afb3-5185bab11b3f",
+          "campaign_id": "5b63e6ce-4200-4334-b09b-24d2a22a8388",
+          "First Name": "Dennis",
+          "Last Name": "Stites",
+          "Email": "drstites@stitesdentalcare.com",
+          "LinkedIn URL": "http://www.linkedin.com/in/dennis-stites-dds-650b6012a",
+          "Company": "Stites Dental Care",
+          "Company URL": "http://www.stitesdentalcare.com",
+          "user_id": "ba6c9063-b40b-459e-946d-e3896b91fbd8"
+        }
+      },
+      {
+        "json": {
+          "perplexity_system_prompt": "# NDC Research Prompt\r\n\r\nYou are a research assistant finding AI automation opportunities and cybersecurity insights for personalized cold outreach. Focus on identifying pain points, vulnerabilities, and automation potential in the prospect's operations.\r\n\r\nResearch this lead's website and find specific details for personalized outreach. Focus on:\r\n- Recent data breaches or security incidents at their company or direct competitors\r\n- Manual processes that could be automated (scheduling, data entry, customer support, reporting)\r\n- Outdated systems or technology stack vulnerabilities\r\n- Industry-specific cybersecurity threats or compliance requirements (HIPAA, SOC 2, GDPR)\r\n- Customer complaints about slow processes or inefficiencies\r\n- Repetitive workflows mentioned in job postings or company content\r\n- Scale indicators suggesting automation needs (team size, customer volume)\r\n\r\nIf no specific vulnerabilities or automation opportunities are found, focus on:\r\n- Their current tech stack and potential integration opportunities\r\n- Industry-standard automation gaps\r\n- Common cybersecurity risks for their sector\r\n- Growth indicators that typically require system upgrades\r\n\r\n## Output Format\r\n**Company Overview:** [Brief description of what they do and scale]\r\n\r\n**Security/Automation Opportunity:** [Specific vulnerability, breach, or automation gap with context]\r\n\r\n**Industry Context:** [Relevant competitor breaches, industry threats, OR common automation use cases for their sector]\r\n\r\n**Summary:** [1 sentence about the most compelling automation or security need]",
+          "perplexity_user_prompt": "Lead Details:\n\nName: Lindsey Snow\nCompany: Snow Family Dentistry\nWebsite: http://www.snowfamilydentistry.com\nLinkedIn: http://www.linkedin.com/in/lindsey-snow-6142571ab",
+          "claude_system_prompt": "# NDC Personalization Prompt\r\n\r\n## Task\r\nCreate a personalized icebreaker sentence based on the provided company information. This will be the opening line of a cold outreach email.\r\n\r\n## Main Focus\r\nReference specific security vulnerabilities, automation opportunities, or industry threats from the research. If no specific issues found: comment on their tech stack, growth indicators, or common industry pain points using simple terms.\r\n\r\n## Guidelines\r\n- Use a conversational tone that sounds human and natural\r\n- Keep it short — maximum 25 words\r\n- Write at a grade 6 reading level using simple language\r\n- Do not use em dashes (—) or complex punctuation\r\n- Only write in English\r\n- Do not ask questions or request meetings\r\n- Do not guess, exaggerate, or invent information — only use the data provided\r\n- Paraphrase information rather than copying sentences directly\r\n\r\n## Example\r\nInstead of: \"I noticed your competitors experienced significant data breaches recently, and I wanted to reach out regarding comprehensive cybersecurity solutions that could protect your valuable customer data.\"\r\n\r\nWrite: \"Saw that TechFlow Systems got breached last month and they're in your exact niche — bet that's got you thinking about security upgrades.\"\r\n\r\n## Output Format\r\nReturn only a JSON object with the personalized sentence:\r\n\r\n{\r\n\"personalized_sentence\": \"\"\r\n}\r\n\r\nIf insufficient information is available to create a meaningful personalized sentence, return an empty string.\r\n\r\nIMPORTANT: If you cannot generate a message, return an empty string.",
+          "claude_user_prompt": "Lead Details:\n\nName: Lindsey Snow\nCompany: Snow Family Dentistry\nWebsite: http://www.snowfamilydentistry.com\nLinkedIn: http://www.linkedin.com/in/lindsey-snow-6142571ab",
+          "campaign_leads_id": "82bd9d28-ea6a-4007-afb3-5185bab11b3f",
+          "campaign_id": "5b63e6ce-4200-4334-b09b-24d2a22a8388",
+          "First Name": "Lindsey",
+          "Last Name": "Snow",
+          "Email": "lindsey@snowfamilydentistry.com",
+          "LinkedIn URL": "http://www.linkedin.com/in/lindsey-snow-6142571ab",
+          "Company": "Snow Family Dentistry",
+          "Company URL": "http://www.snowfamilydentistry.com",
+          "user_id": "ba6c9063-b40b-459e-946d-e3896b91fbd8"
+        }
+      },
+      {
+        "json": {
+          "perplexity_system_prompt": "# NDC Research Prompt\r\n\r\nYou are a research assistant finding AI automation opportunities and cybersecurity insights for personalized cold outreach. Focus on identifying pain points, vulnerabilities, and automation potential in the prospect's operations.\r\n\r\nResearch this lead's website and find specific details for personalized outreach. Focus on:\r\n- Recent data breaches or security incidents at their company or direct competitors\r\n- Manual processes that could be automated (scheduling, data entry, customer support, reporting)\r\n- Outdated systems or technology stack vulnerabilities\r\n- Industry-specific cybersecurity threats or compliance requirements (HIPAA, SOC 2, GDPR)\r\n- Customer complaints about slow processes or inefficiencies\r\n- Repetitive workflows mentioned in job postings or company content\r\n- Scale indicators suggesting automation needs (team size, customer volume)\r\n\r\nIf no specific vulnerabilities or automation opportunities are found, focus on:\r\n- Their current tech stack and potential integration opportunities\r\n- Industry-standard automation gaps\r\n- Common cybersecurity risks for their sector\r\n- Growth indicators that typically require system upgrades\r\n\r\n## Output Format\r\n**Company Overview:** [Brief description of what they do and scale]\r\n\r\n**Security/Automation Opportunity:** [Specific vulnerability, breach, or automation gap with context]\r\n\r\n**Industry Context:** [Relevant competitor breaches, industry threats, OR common automation use cases for their sector]\r\n\r\n**Summary:** [1 sentence about the most compelling automation or security need]",
+          "perplexity_user_prompt": "Lead Details:\n\nName: Anne Eunson\nCompany: Eunson Family and Cosmetic Dentistry\nWebsite: http://www.eunsondental.com\nLinkedIn: http://www.linkedin.com/in/anne-eunson-39852519",
+          "claude_system_prompt": "# NDC Personalization Prompt\r\n\r\n## Task\r\nCreate a personalized icebreaker sentence based on the provided company information. This will be the opening line of a cold outreach email.\r\n\r\n## Main Focus\r\nReference specific security vulnerabilities, automation opportunities, or industry threats from the research. If no specific issues found: comment on their tech stack, growth indicators, or common industry pain points using simple terms.\r\n\r\n## Guidelines\r\n- Use a conversational tone that sounds human and natural\r\n- Keep it short — maximum 25 words\r\n- Write at a grade 6 reading level using simple language\r\n- Do not use em dashes (—) or complex punctuation\r\n- Only write in English\r\n- Do not ask questions or request meetings\r\n- Do not guess, exaggerate, or invent information — only use the data provided\r\n- Paraphrase information rather than copying sentences directly\r\n\r\n## Example\r\nInstead of: \"I noticed your competitors experienced significant data breaches recently, and I wanted to reach out regarding comprehensive cybersecurity solutions that could protect your valuable customer data.\"\r\n\r\nWrite: \"Saw that TechFlow Systems got breached last month and they're in your exact niche — bet that's got you thinking about security upgrades.\"\r\n\r\n## Output Format\r\nReturn only a JSON object with the personalized sentence:\r\n\r\n{\r\n\"personalized_sentence\": \"\"\r\n}\r\n\r\nIf insufficient information is available to create a meaningful personalized sentence, return an empty string.\r\n\r\nIMPORTANT: If you cannot generate a message, return an empty string.",
+          "claude_user_prompt": "Lead Details:\n\nName: Anne Eunson\nCompany: Eunson Family and Cosmetic Dentistry\nWebsite: http://www.eunsondental.com\nLinkedIn: http://www.linkedin.com/in/anne-eunson-39852519",
+          "campaign_leads_id": "82bd9d28-ea6a-4007-afb3-5185bab11b3f",
+          "campaign_id": "5b63e6ce-4200-4334-b09b-24d2a22a8388",
+          "First Name": "Anne",
+          "Last Name": "Eunson",
+          "Email": "smiles@eunsondental.com",
+          "LinkedIn URL": "http://www.linkedin.com/in/anne-eunson-39852519",
+          "Company": "Eunson Family and Cosmetic Dentistry",
+          "Company URL": "http://www.eunsondental.com",
+          "user_id": "ba6c9063-b40b-459e-946d-e3896b91fbd8"
+        }
+      },
+      {
+        "json": {
+          "perplexity_system_prompt": "# NDC Research Prompt\r\n\r\nYou are a research assistant finding AI automation opportunities and cybersecurity insights for personalized cold outreach. Focus on identifying pain points, vulnerabilities, and automation potential in the prospect's operations.\r\n\r\nResearch this lead's website and find specific details for personalized outreach. Focus on:\r\n- Recent data breaches or security incidents at their company or direct competitors\r\n- Manual processes that could be automated (scheduling, data entry, customer support, reporting)\r\n- Outdated systems or technology stack vulnerabilities\r\n- Industry-specific cybersecurity threats or compliance requirements (HIPAA, SOC 2, GDPR)\r\n- Customer complaints about slow processes or inefficiencies\r\n- Repetitive workflows mentioned in job postings or company content\r\n- Scale indicators suggesting automation needs (team size, customer volume)\r\n\r\nIf no specific vulnerabilities or automation opportunities are found, focus on:\r\n- Their current tech stack and potential integration opportunities\r\n- Industry-standard automation gaps\r\n- Common cybersecurity risks for their sector\r\n- Growth indicators that typically require system upgrades\r\n\r\n## Output Format\r\n**Company Overview:** [Brief description of what they do and scale]\r\n\r\n**Security/Automation Opportunity:** [Specific vulnerability, breach, or automation gap with context]\r\n\r\n**Industry Context:** [Relevant competitor breaches, industry threats, OR common automation use cases for their sector]\r\n\r\n**Summary:** [1 sentence about the most compelling automation or security need]",
+          "perplexity_user_prompt": "Lead Details:\n\nName: Kathy Flynn\nCompany: K. Flynn Insurance Agency, Inc\nWebsite: http://www.kflynninsurance.com\nLinkedIn: http://www.linkedin.com/in/kathy-flynn-993a8521",
+          "claude_system_prompt": "# NDC Personalization Prompt\r\n\r\n## Task\r\nCreate a personalized icebreaker sentence based on the provided company information. This will be the opening line of a cold outreach email.\r\n\r\n## Main Focus\r\nReference specific security vulnerabilities, automation opportunities, or industry threats from the research. If no specific issues found: comment on their tech stack, growth indicators, or common industry pain points using simple terms.\r\n\r\n## Guidelines\r\n- Use a conversational tone that sounds human and natural\r\n- Keep it short — maximum 25 words\r\n- Write at a grade 6 reading level using simple language\r\n- Do not use em dashes (—) or complex punctuation\r\n- Only write in English\r\n- Do not ask questions or request meetings\r\n- Do not guess, exaggerate, or invent information — only use the data provided\r\n- Paraphrase information rather than copying sentences directly\r\n\r\n## Example\r\nInstead of: \"I noticed your competitors experienced significant data breaches recently, and I wanted to reach out regarding comprehensive cybersecurity solutions that could protect your valuable customer data.\"\r\n\r\nWrite: \"Saw that TechFlow Systems got breached last month and they're in your exact niche — bet that's got you thinking about security upgrades.\"\r\n\r\n## Output Format\r\nReturn only a JSON object with the personalized sentence:\r\n\r\n{\r\n\"personalized_sentence\": \"\"\r\n}\r\n\r\nIf insufficient information is available to create a meaningful personalized sentence, return an empty string.\r\n\r\nIMPORTANT: If you cannot generate a message, return an empty string.",
+          "claude_user_prompt": "Lead Details:\n\nName: Kathy Flynn\nCompany: K. Flynn Insurance Agency, Inc\nWebsite: http://www.kflynninsurance.com\nLinkedIn: http://www.linkedin.com/in/kathy-flynn-993a8521",
+          "campaign_leads_id": "82bd9d28-ea6a-4007-afb3-5185bab11b3f",
+          "campaign_id": "5b63e6ce-4200-4334-b09b-24d2a22a8388",
+          "First Name": "Kathy",
+          "Last Name": "Flynn",
+          "Email": "kathyf@kflynninsurance.com",
+          "LinkedIn URL": "http://www.linkedin.com/in/kathy-flynn-993a8521",
+          "Company": "K. Flynn Insurance Agency, Inc",
+          "Company URL": "http://www.kflynninsurance.com",
+          "user_id": "ba6c9063-b40b-459e-946d-e3896b91fbd8"
+        }
+      },
+      {
+        "json": {
+          "perplexity_system_prompt": "# NDC Research Prompt\r\n\r\nYou are a research assistant finding AI automation opportunities and cybersecurity insights for personalized cold outreach. Focus on identifying pain points, vulnerabilities, and automation potential in the prospect's operations.\r\n\r\nResearch this lead's website and find specific details for personalized outreach. Focus on:\r\n- Recent data breaches or security incidents at their company or direct competitors\r\n- Manual processes that could be automated (scheduling, data entry, customer support, reporting)\r\n- Outdated systems or technology stack vulnerabilities\r\n- Industry-specific cybersecurity threats or compliance requirements (HIPAA, SOC 2, GDPR)\r\n- Customer complaints about slow processes or inefficiencies\r\n- Repetitive workflows mentioned in job postings or company content\r\n- Scale indicators suggesting automation needs (team size, customer volume)\r\n\r\nIf no specific vulnerabilities or automation opportunities are found, focus on:\r\n- Their current tech stack and potential integration opportunities\r\n- Industry-standard automation gaps\r\n- Common cybersecurity risks for their sector\r\n- Growth indicators that typically require system upgrades\r\n\r\n## Output Format\r\n**Company Overview:** [Brief description of what they do and scale]\r\n\r\n**Security/Automation Opportunity:** [Specific vulnerability, breach, or automation gap with context]\r\n\r\n**Industry Context:** [Relevant competitor breaches, industry threats, OR common automation use cases for their sector]\r\n\r\n**Summary:** [1 sentence about the most compelling automation or security need]",
+          "perplexity_user_prompt": "Lead Details:\n\nName: Ann Soberay\nCompany: Omega Dental Care\nWebsite: http://www.omegadental.org\nLinkedIn: http://www.linkedin.com/in/soberay",
+          "claude_system_prompt": "# NDC Personalization Prompt\r\n\r\n## Task\r\nCreate a personalized icebreaker sentence based on the provided company information. This will be the opening line of a cold outreach email.\r\n\r\n## Main Focus\r\nReference specific security vulnerabilities, automation opportunities, or industry threats from the research. If no specific issues found: comment on their tech stack, growth indicators, or common industry pain points using simple terms.\r\n\r\n## Guidelines\r\n- Use a conversational tone that sounds human and natural\r\n- Keep it short — maximum 25 words\r\n- Write at a grade 6 reading level using simple language\r\n- Do not use em dashes (—) or complex punctuation\r\n- Only write in English\r\n- Do not ask questions or request meetings\r\n- Do not guess, exaggerate, or invent information — only use the data provided\r\n- Paraphrase information rather than copying sentences directly\r\n\r\n## Example\r\nInstead of: \"I noticed your competitors experienced significant data breaches recently, and I wanted to reach out regarding comprehensive cybersecurity solutions that could protect your valuable customer data.\"\r\n\r\nWrite: \"Saw that TechFlow Systems got breached last month and they're in your exact niche — bet that's got you thinking about security upgrades.\"\r\n\r\n## Output Format\r\nReturn only a JSON object with the personalized sentence:\r\n\r\n{\r\n\"personalized_sentence\": \"\"\r\n}\r\n\r\nIf insufficient information is available to create a meaningful personalized sentence, return an empty string.\r\n\r\nIMPORTANT: If you cannot generate a message, return an empty string.",
+          "claude_user_prompt": "Lead Details:\n\nName: Ann Soberay\nCompany: Omega Dental Care\nWebsite: http://www.omegadental.org\nLinkedIn: http://www.linkedin.com/in/soberay",
+          "campaign_leads_id": "82bd9d28-ea6a-4007-afb3-5185bab11b3f",
+          "campaign_id": "5b63e6ce-4200-4334-b09b-24d2a22a8388",
+          "First Name": "Ann",
+          "Last Name": "Soberay",
+          "Email": "drann@omegadental.org",
+          "LinkedIn URL": "http://www.linkedin.com/in/soberay",
+          "Company": "Omega Dental Care",
+          "Company URL": "http://www.omegadental.org",
+          "user_id": "ba6c9063-b40b-459e-946d-e3896b91fbd8"
+        }
+      },
+      {
+        "json": {
+          "perplexity_system_prompt": "# NDC Research Prompt\r\n\r\nYou are a research assistant finding AI automation opportunities and cybersecurity insights for personalized cold outreach. Focus on identifying pain points, vulnerabilities, and automation potential in the prospect's operations.\r\n\r\nResearch this lead's website and find specific details for personalized outreach. Focus on:\r\n- Recent data breaches or security incidents at their company or direct competitors\r\n- Manual processes that could be automated (scheduling, data entry, customer support, reporting)\r\n- Outdated systems or technology stack vulnerabilities\r\n- Industry-specific cybersecurity threats or compliance requirements (HIPAA, SOC 2, GDPR)\r\n- Customer complaints about slow processes or inefficiencies\r\n- Repetitive workflows mentioned in job postings or company content\r\n- Scale indicators suggesting automation needs (team size, customer volume)\r\n\r\nIf no specific vulnerabilities or automation opportunities are found, focus on:\r\n- Their current tech stack and potential integration opportunities\r\n- Industry-standard automation gaps\r\n- Common cybersecurity risks for their sector\r\n- Growth indicators that typically require system upgrades\r\n\r\n## Output Format\r\n**Company Overview:** [Brief description of what they do and scale]\r\n\r\n**Security/Automation Opportunity:** [Specific vulnerability, breach, or automation gap with context]\r\n\r\n**Industry Context:** [Relevant competitor breaches, industry threats, OR common automation use cases for their sector]\r\n\r\n**Summary:** [1 sentence about the most compelling automation or security need]",
+          "perplexity_user_prompt": "Lead Details:\n\nName: Jenifer Patterson\nCompany: Senior Solutions USA- Jenifer Patterson Medicare Insurance\nWebsite: http://www.seniorsolutionsusaz.com\nLinkedIn: http://www.linkedin.com/in/jenifer-patterson-8b746937",
+          "claude_system_prompt": "# NDC Personalization Prompt\r\n\r\n## Task\r\nCreate a personalized icebreaker sentence based on the provided company information. This will be the opening line of a cold outreach email.\r\n\r\n## Main Focus\r\nReference specific security vulnerabilities, automation opportunities, or industry threats from the research. If no specific issues found: comment on their tech stack, growth indicators, or common industry pain points using simple terms.\r\n\r\n## Guidelines\r\n- Use a conversational tone that sounds human and natural\r\n- Keep it short — maximum 25 words\r\n- Write at a grade 6 reading level using simple language\r\n- Do not use em dashes (—) or complex punctuation\r\n- Only write in English\r\n- Do not ask questions or request meetings\r\n- Do not guess, exaggerate, or invent information — only use the data provided\r\n- Paraphrase information rather than copying sentences directly\r\n\r\n## Example\r\nInstead of: \"I noticed your competitors experienced significant data breaches recently, and I wanted to reach out regarding comprehensive cybersecurity solutions that could protect your valuable customer data.\"\r\n\r\nWrite: \"Saw that TechFlow Systems got breached last month and they're in your exact niche — bet that's got you thinking about security upgrades.\"\r\n\r\n## Output Format\r\nReturn only a JSON object with the personalized sentence:\r\n\r\n{\r\n\"personalized_sentence\": \"\"\r\n}\r\n\r\nIf insufficient information is available to create a meaningful personalized sentence, return an empty string.\r\n\r\nIMPORTANT: If you cannot generate a message, return an empty string.",
+          "claude_user_prompt": "Lead Details:\n\nName: Jenifer Patterson\nCompany: Senior Solutions USA- Jenifer Patterson Medicare Insurance\nWebsite: http://www.seniorsolutionsusaz.com\nLinkedIn: http://www.linkedin.com/in/jenifer-patterson-8b746937",
+          "campaign_leads_id": "82bd9d28-ea6a-4007-afb3-5185bab11b3f",
+          "campaign_id": "5b63e6ce-4200-4334-b09b-24d2a22a8388",
+          "First Name": "Jenifer",
+          "Last Name": "Patterson",
+          "Email": "jenifer@seniorsolutionsusaz.com",
+          "LinkedIn URL": "http://www.linkedin.com/in/jenifer-patterson-8b746937",
+          "Company": "Senior Solutions USA- Jenifer Patterson Medicare Insurance",
+          "Company URL": "http://www.seniorsolutionsusaz.com",
+          "user_id": "ba6c9063-b40b-459e-946d-e3896b91fbd8"
+        }
+      },
+      {
+        "json": {
+          "perplexity_system_prompt": "# NDC Research Prompt\r\n\r\nYou are a research assistant finding AI automation opportunities and cybersecurity insights for personalized cold outreach. Focus on identifying pain points, vulnerabilities, and automation potential in the prospect's operations.\r\n\r\nResearch this lead's website and find specific details for personalized outreach. Focus on:\r\n- Recent data breaches or security incidents at their company or direct competitors\r\n- Manual processes that could be automated (scheduling, data entry, customer support, reporting)\r\n- Outdated systems or technology stack vulnerabilities\r\n- Industry-specific cybersecurity threats or compliance requirements (HIPAA, SOC 2, GDPR)\r\n- Customer complaints about slow processes or inefficiencies\r\n- Repetitive workflows mentioned in job postings or company content\r\n- Scale indicators suggesting automation needs (team size, customer volume)\r\n\r\nIf no specific vulnerabilities or automation opportunities are found, focus on:\r\n- Their current tech stack and potential integration opportunities\r\n- Industry-standard automation gaps\r\n- Common cybersecurity risks for their sector\r\n- Growth indicators that typically require system upgrades\r\n\r\n## Output Format\r\n**Company Overview:** [Brief description of what they do and scale]\r\n\r\n**Security/Automation Opportunity:** [Specific vulnerability, breach, or automation gap with context]\r\n\r\n**Industry Context:** [Relevant competitor breaches, industry threats, OR common automation use cases for their sector]\r\n\r\n**Summary:** [1 sentence about the most compelling automation or security need]",
+          "perplexity_user_prompt": "Lead Details:\n\nName: Deborah Meyer\nCompany: Spearfish Insurance Brokerage\nWebsite: http://www.insuredakota.com\nLinkedIn: http://www.linkedin.com/in/deborah-meyer",
+          "claude_system_prompt": "# NDC Personalization Prompt\r\n\r\n## Task\r\nCreate a personalized icebreaker sentence based on the provided company information. This will be the opening line of a cold outreach email.\r\n\r\n## Main Focus\r\nReference specific security vulnerabilities, automation opportunities, or industry threats from the research. If no specific issues found: comment on their tech stack, growth indicators, or common industry pain points using simple terms.\r\n\r\n## Guidelines\r\n- Use a conversational tone that sounds human and natural\r\n- Keep it short — maximum 25 words\r\n- Write at a grade 6 reading level using simple language\r\n- Do not use em dashes (—) or complex punctuation\r\n- Only write in English\r\n- Do not ask questions or request meetings\r\n- Do not guess, exaggerate, or invent information — only use the data provided\r\n- Paraphrase information rather than copying sentences directly\r\n\r\n## Example\r\nInstead of: \"I noticed your competitors experienced significant data breaches recently, and I wanted to reach out regarding comprehensive cybersecurity solutions that could protect your valuable customer data.\"\r\n\r\nWrite: \"Saw that TechFlow Systems got breached last month and they're in your exact niche — bet that's got you thinking about security upgrades.\"\r\n\r\n## Output Format\r\nReturn only a JSON object with the personalized sentence:\r\n\r\n{\r\n\"personalized_sentence\": \"\"\r\n}\r\n\r\nIf insufficient information is available to create a meaningful personalized sentence, return an empty string.\r\n\r\nIMPORTANT: If you cannot generate a message, return an empty string.",
+          "claude_user_prompt": "Lead Details:\n\nName: Deborah Meyer\nCompany: Spearfish Insurance Brokerage\nWebsite: http://www.insuredakota.com\nLinkedIn: http://www.linkedin.com/in/deborah-meyer",
+          "campaign_leads_id": "82bd9d28-ea6a-4007-afb3-5185bab11b3f",
+          "campaign_id": "5b63e6ce-4200-4334-b09b-24d2a22a8388",
+          "First Name": "Deborah",
+          "Last Name": "Meyer",
+          "Email": "deb@insuredakota.com",
+          "LinkedIn URL": "http://www.linkedin.com/in/deborah-meyer",
+          "Company": "Spearfish Insurance Brokerage",
+          "Company URL": "http://www.insuredakota.com",
+          "user_id": "ba6c9063-b40b-459e-946d-e3896b91fbd8"
+        }
+      },
+      {
+        "json": {
+          "perplexity_system_prompt": "# NDC Research Prompt\r\n\r\nYou are a research assistant finding AI automation opportunities and cybersecurity insights for personalized cold outreach. Focus on identifying pain points, vulnerabilities, and automation potential in the prospect's operations.\r\n\r\nResearch this lead's website and find specific details for personalized outreach. Focus on:\r\n- Recent data breaches or security incidents at their company or direct competitors\r\n- Manual processes that could be automated (scheduling, data entry, customer support, reporting)\r\n- Outdated systems or technology stack vulnerabilities\r\n- Industry-specific cybersecurity threats or compliance requirements (HIPAA, SOC 2, GDPR)\r\n- Customer complaints about slow processes or inefficiencies\r\n- Repetitive workflows mentioned in job postings or company content\r\n- Scale indicators suggesting automation needs (team size, customer volume)\r\n\r\nIf no specific vulnerabilities or automation opportunities are found, focus on:\r\n- Their current tech stack and potential integration opportunities\r\n- Industry-standard automation gaps\r\n- Common cybersecurity risks for their sector\r\n- Growth indicators that typically require system upgrades\r\n\r\n## Output Format\r\n**Company Overview:** [Brief description of what they do and scale]\r\n\r\n**Security/Automation Opportunity:** [Specific vulnerability, breach, or automation gap with context]\r\n\r\n**Industry Context:** [Relevant competitor breaches, industry threats, OR common automation use cases for their sector]\r\n\r\n**Summary:** [1 sentence about the most compelling automation or security need]",
+          "perplexity_user_prompt": "Lead Details:\n\nName: Rani Ben-david\nCompany: apZme\nWebsite: http://www.apzme.com\nLinkedIn: http://www.linkedin.com/in/ranibendavid",
+          "claude_system_prompt": "# NDC Personalization Prompt\r\n\r\n## Task\r\nCreate a personalized icebreaker sentence based on the provided company information. This will be the opening line of a cold outreach email.\r\n\r\n## Main Focus\r\nReference specific security vulnerabilities, automation opportunities, or industry threats from the research. If no specific issues found: comment on their tech stack, growth indicators, or common industry pain points using simple terms.\r\n\r\n## Guidelines\r\n- Use a conversational tone that sounds human and natural\r\n- Keep it short — maximum 25 words\r\n- Write at a grade 6 reading level using simple language\r\n- Do not use em dashes (—) or complex punctuation\r\n- Only write in English\r\n- Do not ask questions or request meetings\r\n- Do not guess, exaggerate, or invent information — only use the data provided\r\n- Paraphrase information rather than copying sentences directly\r\n\r\n## Example\r\nInstead of: \"I noticed your competitors experienced significant data breaches recently, and I wanted to reach out regarding comprehensive cybersecurity solutions that could protect your valuable customer data.\"\r\n\r\nWrite: \"Saw that TechFlow Systems got breached last month and they're in your exact niche — bet that's got you thinking about security upgrades.\"\r\n\r\n## Output Format\r\nReturn only a JSON object with the personalized sentence:\r\n\r\n{\r\n\"personalized_sentence\": \"\"\r\n}\r\n\r\nIf insufficient information is available to create a meaningful personalized sentence, return an empty string.\r\n\r\nIMPORTANT: If you cannot generate a message, return an empty string.",
+          "claude_user_prompt": "Lead Details:\n\nName: Rani Ben-david\nCompany: apZme\nWebsite: http://www.apzme.com\nLinkedIn: http://www.linkedin.com/in/ranibendavid",
+          "campaign_leads_id": "82bd9d28-ea6a-4007-afb3-5185bab11b3f",
+          "campaign_id": "5b63e6ce-4200-4334-b09b-24d2a22a8388",
+          "First Name": "Rani",
+          "Last Name": "Ben-david",
+          "Email": "rani@apzme.com",
+          "LinkedIn URL": "http://www.linkedin.com/in/ranibendavid",
+          "Company": "apZme",
+          "Company URL": "http://www.apzme.com",
+          "user_id": "ba6c9063-b40b-459e-946d-e3896b91fbd8"
+        }
+      },
+      {
+        "json": {
+          "perplexity_system_prompt": "# NDC Research Prompt\r\n\r\nYou are a research assistant finding AI automation opportunities and cybersecurity insights for personalized cold outreach. Focus on identifying pain points, vulnerabilities, and automation potential in the prospect's operations.\r\n\r\nResearch this lead's website and find specific details for personalized outreach. Focus on:\r\n- Recent data breaches or security incidents at their company or direct competitors\r\n- Manual processes that could be automated (scheduling, data entry, customer support, reporting)\r\n- Outdated systems or technology stack vulnerabilities\r\n- Industry-specific cybersecurity threats or compliance requirements (HIPAA, SOC 2, GDPR)\r\n- Customer complaints about slow processes or inefficiencies\r\n- Repetitive workflows mentioned in job postings or company content\r\n- Scale indicators suggesting automation needs (team size, customer volume)\r\n\r\nIf no specific vulnerabilities or automation opportunities are found, focus on:\r\n- Their current tech stack and potential integration opportunities\r\n- Industry-standard automation gaps\r\n- Common cybersecurity risks for their sector\r\n- Growth indicators that typically require system upgrades\r\n\r\n## Output Format\r\n**Company Overview:** [Brief description of what they do and scale]\r\n\r\n**Security/Automation Opportunity:** [Specific vulnerability, breach, or automation gap with context]\r\n\r\n**Industry Context:** [Relevant competitor breaches, industry threats, OR common automation use cases for their sector]\r\n\r\n**Summary:** [1 sentence about the most compelling automation or security need]",
+          "perplexity_user_prompt": "Lead Details:\n\nName: Danielle Wuensche\nCompany: Zahntechnique, Inc.\nWebsite: http://www.zahnlab.com\nLinkedIn: http://www.linkedin.com/in/danielle-wuensche-b2481822",
+          "claude_system_prompt": "# NDC Personalization Prompt\r\n\r\n## Task\r\nCreate a personalized icebreaker sentence based on the provided company information. This will be the opening line of a cold outreach email.\r\n\r\n## Main Focus\r\nReference specific security vulnerabilities, automation opportunities, or industry threats from the research. If no specific issues found: comment on their tech stack, growth indicators, or common industry pain points using simple terms.\r\n\r\n## Guidelines\r\n- Use a conversational tone that sounds human and natural\r\n- Keep it short — maximum 25 words\r\n- Write at a grade 6 reading level using simple language\r\n- Do not use em dashes (—) or complex punctuation\r\n- Only write in English\r\n- Do not ask questions or request meetings\r\n- Do not guess, exaggerate, or invent information — only use the data provided\r\n- Paraphrase information rather than copying sentences directly\r\n\r\n## Example\r\nInstead of: \"I noticed your competitors experienced significant data breaches recently, and I wanted to reach out regarding comprehensive cybersecurity solutions that could protect your valuable customer data.\"\r\n\r\nWrite: \"Saw that TechFlow Systems got breached last month and they're in your exact niche — bet that's got you thinking about security upgrades.\"\r\n\r\n## Output Format\r\nReturn only a JSON object with the personalized sentence:\r\n\r\n{\r\n\"personalized_sentence\": \"\"\r\n}\r\n\r\nIf insufficient information is available to create a meaningful personalized sentence, return an empty string.\r\n\r\nIMPORTANT: If you cannot generate a message, return an empty string.",
+          "claude_user_prompt": "Lead Details:\n\nName: Danielle Wuensche\nCompany: Zahntechnique, Inc.\nWebsite: http://www.zahnlab.com\nLinkedIn: http://www.linkedin.com/in/danielle-wuensche-b2481822",
+          "campaign_leads_id": "82bd9d28-ea6a-4007-afb3-5185bab11b3f",
+          "campaign_id": "5b63e6ce-4200-4334-b09b-24d2a22a8388",
+          "First Name": "Danielle",
+          "Last Name": "Wuensche",
+          "Email": "danielle@zahnlab.com",
+          "LinkedIn URL": "http://www.linkedin.com/in/danielle-wuensche-b2481822",
+          "Company": "Zahntechnique, Inc.",
+          "Company URL": "http://www.zahnlab.com",
+          "user_id": "ba6c9063-b40b-459e-946d-e3896b91fbd8"
+        }
+      },
+      {
+        "json": {
+          "perplexity_system_prompt": "# NDC Research Prompt\r\n\r\nYou are a research assistant finding AI automation opportunities and cybersecurity insights for personalized cold outreach. Focus on identifying pain points, vulnerabilities, and automation potential in the prospect's operations.\r\n\r\nResearch this lead's website and find specific details for personalized outreach. Focus on:\r\n- Recent data breaches or security incidents at their company or direct competitors\r\n- Manual processes that could be automated (scheduling, data entry, customer support, reporting)\r\n- Outdated systems or technology stack vulnerabilities\r\n- Industry-specific cybersecurity threats or compliance requirements (HIPAA, SOC 2, GDPR)\r\n- Customer complaints about slow processes or inefficiencies\r\n- Repetitive workflows mentioned in job postings or company content\r\n- Scale indicators suggesting automation needs (team size, customer volume)\r\n\r\nIf no specific vulnerabilities or automation opportunities are found, focus on:\r\n- Their current tech stack and potential integration opportunities\r\n- Industry-standard automation gaps\r\n- Common cybersecurity risks for their sector\r\n- Growth indicators that typically require system upgrades\r\n\r\n## Output Format\r\n**Company Overview:** [Brief description of what they do and scale]\r\n\r\n**Security/Automation Opportunity:** [Specific vulnerability, breach, or automation gap with context]\r\n\r\n**Industry Context:** [Relevant competitor breaches, industry threats, OR common automation use cases for their sector]\r\n\r\n**Summary:** [1 sentence about the most compelling automation or security need]",
+          "perplexity_user_prompt": "Lead Details:\n\nName: Jennifer Sweet\nCompany: Blue Ravine Animal Hospital\nWebsite: http://www.blueravineanimalhospital.com\nLinkedIn: http://www.linkedin.com/in/jennifer-sweet-763196213",
+          "claude_system_prompt": "# NDC Personalization Prompt\r\n\r\n## Task\r\nCreate a personalized icebreaker sentence based on the provided company information. This will be the opening line of a cold outreach email.\r\n\r\n## Main Focus\r\nReference specific security vulnerabilities, automation opportunities, or industry threats from the research. If no specific issues found: comment on their tech stack, growth indicators, or common industry pain points using simple terms.\r\n\r\n## Guidelines\r\n- Use a conversational tone that sounds human and natural\r\n- Keep it short — maximum 25 words\r\n- Write at a grade 6 reading level using simple language\r\n- Do not use em dashes (—) or complex punctuation\r\n- Only write in English\r\n- Do not ask questions or request meetings\r\n- Do not guess, exaggerate, or invent information — only use the data provided\r\n- Paraphrase information rather than copying sentences directly\r\n\r\n## Example\r\nInstead of: \"I noticed your competitors experienced significant data breaches recently, and I wanted to reach out regarding comprehensive cybersecurity solutions that could protect your valuable customer data.\"\r\n\r\nWrite: \"Saw that TechFlow Systems got breached last month and they're in your exact niche — bet that's got you thinking about security upgrades.\"\r\n\r\n## Output Format\r\nReturn only a JSON object with the personalized sentence:\r\n\r\n{\r\n\"personalized_sentence\": \"\"\r\n}\r\n\r\nIf insufficient information is available to create a meaningful personalized sentence, return an empty string.\r\n\r\nIMPORTANT: If you cannot generate a message, return an empty string.",
+          "claude_user_prompt": "Lead Details:\n\nName: Jennifer Sweet\nCompany: Blue Ravine Animal Hospital\nWebsite: http://www.blueravineanimalhospital.com\nLinkedIn: http://www.linkedin.com/in/jennifer-sweet-763196213",
+          "campaign_leads_id": "82bd9d28-ea6a-4007-afb3-5185bab11b3f",
+          "campaign_id": "5b63e6ce-4200-4334-b09b-24d2a22a8388",
+          "First Name": "Jennifer",
+          "Last Name": "Sweet",
+          "Email": "dr.sweet@blueravineanimalhospital.com",
+          "LinkedIn URL": "http://www.linkedin.com/in/jennifer-sweet-763196213",
+          "Company": "Blue Ravine Animal Hospital",
+          "Company URL": "http://www.blueravineanimalhospital.com",
+          "user_id": "ba6c9063-b40b-459e-946d-e3896b91fbd8"
+        }
+      }
+    ]
+  },
+  "connections": {
+    "Set Columns": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Enrich Apollo Leads": {
+      "main": [
+        [
+          {
+            "node": "Personalize Outreach1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait5": {
+      "main": [
+        [
+          {
+            "node": "No Operation, do nothing",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Get a row1",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Wait5",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update a row5": {
+      "main": [
+        [
+          {
+            "node": "Update a row",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get a row1": {
+      "main": [
+        [
+          {
+            "node": "Update a row5",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get a row2": {
+      "main": [
+        [
+          {
+            "node": "If previously Personalized",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If previously Personalized": {
+      "main": [
+        [
+          {
+            "node": "Enrich Apollo Leads",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "No Operation, do nothing",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenRouter Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Personalize Outreach1",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Personalize Outreach1",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Personalize Outreach1": {
+      "main": [
+        [
+          {
+            "node": "Set Columns",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Personalization Sub Workflow": {
+      "main": [
+        [
+          {
+            "node": "Get a row2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update a row": {
+      "main": [
+        [
+          {
+            "node": "Wait5",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get a row": {
+      "main": [
+        [
+          {
+            "node": "Update KPIs",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update KPIs": {
+      "main": [
+        [
+          {
+            "node": "No Operation, do nothing",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Get a row",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "9d74c857-f4aa-4732-b0fb-71bb5f972f97",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "375b9a2448eee06adaa457734090f8e8e15f3aaba5e2f309f12037ccda016634"
+  },
+  "id": "flOEv7KkS8w4z8rK",
+  "tags": []
+}

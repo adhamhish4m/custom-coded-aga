@@ -1,0 +1,41 @@
+{
+  "name": "aga-backend",
+  "version": "1.0.0",
+  "description": "AI Growth Accelerator Backend - Custom replacement for n8n workflows",
+  "type": "module",
+  "main": "dist/index.js",
+  "scripts": {
+    "dev": "tsx watch src/index.ts",
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "test": "vitest",
+    "migrate": "tsx migrate.ts",
+    "migrate:auto": "tsx auto-migrate.ts",
+    "migrate:run": "tsx run-migration.ts",
+    "db": "tsx db-utils.ts"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.57.2",
+    "axios": "^1.7.9",
+    "cors": "^2.8.5",
+    "csv-parse": "^5.6.0",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "multer": "^1.4.5-lts.1",
+    "p-retry": "^6.2.1",
+    "pg": "^8.16.3",
+    "uuid": "^11.0.5",
+    "zod": "^3.25.76"
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.17",
+    "@types/express": "^5.0.0",
+    "@types/multer": "^1.4.12",
+    "@types/node": "^22.16.5",
+    "@types/pg": "^8.15.6",
+    "@types/uuid": "^10.0.0",
+    "tsx": "^4.19.2",
+    "typescript": "^5.8.3",
+    "vitest": "^2.1.8"
+  }
+}

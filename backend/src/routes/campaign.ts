@@ -127,7 +127,7 @@ router.get('/status/:runId', async (req: Request, res: Response) => {
     res.json({
       success: true,
       status: {
-        run_id: status.run_id,
+        run_id: status.id,
         campaign_id: status.campaign_id,
         status: status.status,
         updated_at: status.updated_at,

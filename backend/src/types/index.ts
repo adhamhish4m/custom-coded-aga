@@ -104,7 +104,7 @@ export interface CampaignRun {
   id: string;
   campaign_id: string;
   user_id: string;
-  status: 'pending' | 'in_queue' | 'processing' | 'completed' | 'failed' | 'cancelled';
+  status: 'pending' | 'in_queue' | 'extracting' | 'personalizing' | 'processing' | 'completed' | 'failed' | 'cancelled';
   source: string | null;
   lead_count: number | null;
   processed_count: number;

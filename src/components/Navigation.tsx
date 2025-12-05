@@ -2,6 +2,7 @@ import { Button } from '@/components/ui/button';
 import { LogOut, BarChart3, Home } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { ThemeToggle } from '@/components/theme-toggle';
 
 export function Navigation() {
   const { userProfile, signOut } = useAuth();
@@ -46,7 +47,8 @@ export function Navigation() {
           </div>
 
           {/* User Info and Sign Out */}
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2">
+            <ThemeToggle />
             <Button
               variant="outline"
               size="sm"

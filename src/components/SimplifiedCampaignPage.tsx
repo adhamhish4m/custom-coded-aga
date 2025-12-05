@@ -17,6 +17,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/hooks/useAuth';
 import { agaBackend } from '@/services/agaBackend';
+import { Navigation } from './Navigation';
 
 interface Campaign {
   id: string;
@@ -606,6 +607,10 @@ export function SimplifiedCampaignPage() {
       {/* Simple Background - Optimized for performance */}
       <div className="fixed inset-0 -z-10">
         <div className="absolute inset-0 bg-gradient-to-br from-purple-500/5 via-background to-blue-500/5" />
+      </div>
+
+      <div className="relative z-10">
+        <Navigation />
       </div>
 
       <div className="p-4 sm:p-6 lg:p-8 max-w-[1600px] mx-auto relative z-10">

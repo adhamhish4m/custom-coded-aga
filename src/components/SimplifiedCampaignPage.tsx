@@ -42,6 +42,7 @@ interface AGARunProgress {
   lead_count: number | null;
   processed_count?: number | null;
   total_count?: number | null;
+  error_message?: string | null;
   created_at: string;
   updated_at: string;
 }
@@ -436,7 +437,8 @@ export function SimplifiedCampaignPage() {
         apolloUrl: webhookPayload.apolloUrl,
         leadCount: webhookPayload.leadCount,
         rerun: 'true',
-        notifyOnComplete: webhookPayload.notifyOnComplete || false
+        notifyOnComplete: webhookPayload.notifyOnComplete || false,
+        customVariables: webhookPayload.customVariables
       };
 
       const response = await agaBackend.processCampaign(backendRequest);
@@ -599,6 +601,19 @@ export function SimplifiedCampaignPage() {
 
                 {/* Right: Actions */}
                 <div className="flex flex-wrap gap-2">
+                  {/* Re-run button for failed campaigns */}
+                  {agaRunStatus?.status === 'failed' && (
+                    <Button
+                      onClick={rerunCampaign}
+                      size="sm"
+                      variant="outline"
+                      className="hover:shadow-lg hover:shadow-orange-500/20 transition-all border-orange-500/50 text-orange-600 hover:bg-orange-500/10"
+                    >
+                      <RotateCcw className="w-4 h-4 mr-2" />
+                      <span className="hidden sm:inline">Re-run Campaign</span>
+                    </Button>
+                  )}
+
                   <Button
                     variant="outline"
                     onClick={handleRefresh}
@@ -665,6 +680,19 @@ export function SimplifiedCampaignPage() {
                 </div>
               </div>
             </CardHeader>
+
+            {/* Error Alert for Failed Campaigns */}
+            {agaRunStatus?.status === 'failed' && agaRunStatus.error_message && (
+              <div className="px-4 sm:px-6 pt-4">
+                <Alert variant="destructive">
+                  <AlertTriangle className="h-4 w-4" />
+                  <AlertTitle>Campaign Failed</AlertTitle>
+                  <AlertDescription>
+                    {agaRunStatus.error_message}
+                  </AlertDescription>
+                </Alert>
+              </div>
+            )}
 
             {/* Stats Grid */}
             <CardContent className="p-4 sm:p-6">

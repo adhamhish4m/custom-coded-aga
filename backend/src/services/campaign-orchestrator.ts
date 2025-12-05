@@ -84,7 +84,8 @@ class CampaignOrchestrator {
         campaignLeadsId: campaign_leads_id,
         userId: user_id,
         runId: run_id,
-        campaignId: campaign_id
+        campaignId: campaign_id,
+        customVariables: input.customVariables
       };
 
       if (!personalizationService.validateConfig(config)) {

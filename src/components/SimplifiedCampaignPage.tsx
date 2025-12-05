@@ -187,15 +187,30 @@ export function SimplifiedCampaignPage() {
     }
 
     try {
-      // Prepare CSV data with selected columns only
-      const csvHeaders = [
+      // Collect all unique custom variable names from leads
+      const customVariableNames = new Set<string>();
+      leads.forEach(lead => {
+        const leadDataArray = Array.isArray(lead.lead_data) ? lead.lead_data : [lead.lead_data];
+        leadDataArray.forEach((data: any) => {
+          if (data?.custom_variables) {
+            Object.keys(data.custom_variables).forEach(key => customVariableNames.add(key));
+          }
+        });
+      });
+
+      // Prepare CSV headers: base columns + custom variables
+      const baseHeaders = [
         'First Name', 'Last Name', 'Company Name', 'Company Website',
         'Email', 'LinkedIn', 'Company State'
       ];
+      const customVarHeaders = Array.from(customVariableNames).sort();
+      const csvHeaders = [...baseHeaders, ...customVarHeaders];
+
+      // Prepare CSV rows
       const csvRows = leads.flatMap(lead => {
         const leadDataArray = Array.isArray(lead.lead_data) ? lead.lead_data : [lead.lead_data];
         return leadDataArray.map((data: any) => {
-          return [
+          const baseRow = [
             data?.first_name || '',
             data?.last_name || '',
             data?.company || '',
@@ -204,6 +219,13 @@ export function SimplifiedCampaignPage() {
             data?.linkedin_url || '',
             data?.company_state || ''
           ];
+
+          // Add custom variable values in the same order as headers
+          const customVarValues = customVarHeaders.map(varName =>
+            data?.custom_variables?.[varName] || ''
+          );
+
+          return [...baseRow, ...customVarValues];
         });
       });
 

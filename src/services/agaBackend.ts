@@ -5,6 +5,12 @@
 
 const API_BASE_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:3001';
 
+export interface CustomVariable {
+  id: string;
+  name: string;
+  prompt: string;
+}
+
 export interface CampaignProcessRequest {
   csv_file?: File;
   leadSource: 'csv' | 'apollo';
@@ -24,6 +30,7 @@ export interface CampaignProcessRequest {
   demo?: string;
   rerun?: string;
   notifyOnComplete?: boolean;
+  customVariables?: CustomVariable[];
 }
 
 export interface CampaignProcessResponse {
@@ -61,6 +68,7 @@ export interface EnrichedLead {
   personalized_message: string;
   enrichment_status: 'enriched' | 'failed' | 'pending';
   perplexity_research?: string;
+  custom_variables?: { [key: string]: string };
 }
 
 export interface CampaignResults {

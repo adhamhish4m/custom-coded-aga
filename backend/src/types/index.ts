@@ -1,3 +1,9 @@
+export interface CustomVariable {
+  id: string;
+  name: string;
+  prompt: string;
+}
+
 export interface Lead {
   first_name: string;
   last_name: string;
@@ -44,6 +50,7 @@ export interface EnrichedLead extends Lead {
   personalized_message: string;
   enrichment_status: 'enriched' | 'failed' | 'pending';
   perplexity_research?: string;
+  custom_variables?: { [key: string]: string };
 }
 
 export interface CampaignInput {
@@ -65,6 +72,7 @@ export interface CampaignInput {
   leadCount?: number;
   demo?: string;
   notifyOnComplete?: boolean;
+  customVariables?: CustomVariable[];
 }
 
 export interface PerplexityRequest {
@@ -90,6 +98,7 @@ export interface PersonalizationRequest {
 
 export interface PersonalizationResponse {
   personalized_sentence: string;
+  custom_variables?: { [key: string]: string };
 }
 
 export interface CampaignLead {

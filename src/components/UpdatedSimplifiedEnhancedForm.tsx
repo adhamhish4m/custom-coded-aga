@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Upload, Rocket, Loader2, AlertTriangle, CheckCircle, XCircle, Clock } from 'lucide-react';
+import { Upload, Rocket, Loader2, AlertTriangle, CheckCircle, XCircle, Clock, Plus, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -15,6 +15,12 @@ import { Navigation } from './Navigation';
 import { agaBackend } from '@/services/agaBackend';
 
 
+interface CustomVariable {
+  id: string;
+  name: string;
+  prompt: string;
+}
+
 interface FormData {
   leadSource: 'apollo' | 'csv' | '';
   apolloUrl: string;
@@ -22,6 +28,7 @@ interface FormData {
   leadCount: number;
   campaignName: string;
   notifyOnComplete: boolean;
+  customVariables: CustomVariable[];
 }
 
 interface UpdatedSimplifiedEnhancedFormProps {
@@ -37,6 +44,13 @@ export function UpdatedSimplifiedEnhancedForm({ onSubmissionSuccess }: UpdatedSi
     leadCount: 500,
     campaignName: '',
     notifyOnComplete: false,
+    customVariables: [
+      {
+        id: crypto.randomUUID(),
+        name: 'personalized_sentence',
+        prompt: 'Create a personalized icebreaker sentence about the company (max 25 words)'
+      }
+    ]
   });
 
   // Research System Prompt
@@ -248,6 +262,36 @@ IMPORTANT: If you cannot generate a message, return an empty string.`);
     }
   };
 
+  // Custom variable management functions
+  const addCustomVariable = () => {
+    setFormData(prev => ({
+      ...prev,
+      customVariables: [
+        ...prev.customVariables,
+        {
+          id: crypto.randomUUID(),
+          name: '',
+          prompt: ''
+        }
+      ]
+    }));
+  };
+
+  const removeCustomVariable = (id: string) => {
+    setFormData(prev => ({
+      ...prev,
+      customVariables: prev.customVariables.filter(v => v.id !== id)
+    }));
+  };
+
+  const updateCustomVariable = (id: string, field: 'name' | 'prompt', value: string) => {
+    setFormData(prev => ({
+      ...prev,
+      customVariables: prev.customVariables.map(v =>
+        v.id === id ? { ...v, [field]: value } : v
+      )
+    }));
+  };
 
   // Check if there are any active runs for the current user
   const checkForActiveRuns = async (): Promise<boolean> => {
@@ -433,6 +477,7 @@ IMPORTANT: If you cannot generate a message, return an empty string.`);
       submissionData.append('promptGuidelines', '• Use a conversational tone that sounds human and natural\n• Keep it short — maximum 25 words\n• Write at a grade 6 reading level using simple language');
       submissionData.append('promptExample', 'Instead of: "I appreciate how Heaven\'s Pets combines heartfelt, personalized pet cremation services with thoughtful keepsakes, truly honoring each pet\'s unique memory."\n\nWrite: "I like how Heaven\'s Pets gives loving pet cremation services and keepsakes that honor each pet."');
       submissionData.append('personalizationStrategy', 'company-achievements');
+      submissionData.append('customVariables', JSON.stringify(formData.customVariables));
 
       if (formData.leadSource === 'apollo') {
         submissionData.append('apolloUrl', formData.apolloUrl);
@@ -456,7 +501,8 @@ IMPORTANT: If you cannot generate a message, return an empty string.`);
         promptGuidelines: '• Use a conversational tone that sounds human and natural\n• Keep it short — maximum 25 words\n• Write at a grade 6 reading level using simple language',
         promptExample: 'Instead of: "I appreciate how Heaven\'s Pets combines heartfelt, personalized pet cremation services with thoughtful keepsakes, truly honoring each pet\'s unique memory."\n\nWrite: "I like how Heaven\'s Pets gives loving pet cremation services and keepsakes that honor each pet."',
         personalizationStrategy: 'company-achievements',
-        notifyOnComplete: formData.notifyOnComplete
+        notifyOnComplete: formData.notifyOnComplete,
+        customVariables: formData.customVariables
       };
 
       if (formData.leadSource === 'apollo') {
@@ -501,7 +547,8 @@ IMPORTANT: If you cannot generate a message, return an empty string.`);
             apolloUrl: formData.leadSource === 'apollo' ? formData.apolloUrl : undefined,
             leadCount: formData.leadSource === 'apollo' ? formData.leadCount : undefined,
             rerun: 'false',
-            notifyOnComplete: formData.notifyOnComplete
+            notifyOnComplete: formData.notifyOnComplete,
+            customVariables: formData.customVariables
           };
 
           const backendResponse = await agaBackend.processCampaign(backendRequest);
@@ -880,6 +927,82 @@ IMPORTANT: If you cannot generate a message, return an empty string.`);
                     onChange={(e) => setPersonalizationSystemPrompt(e.target.value)}
                     className="bg-white dark:bg-gray-900 border-2 border-purple-300 dark:border-purple-700 min-h-[400px] font-mono text-xs sm:text-sm focus:ring-2 focus:ring-purple-500 hover:border-purple-400 transition-all duration-300"
                   />
+                </div>
+              </Card>
+
+              {/* Custom Variables */}
+              <Card className="p-4 sm:p-6 glass-card border-indigo-500/20 hover:border-indigo-500/40 hover:shadow-xl hover:shadow-indigo-500/20 transition-all duration-300">
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between mb-2">
+                    <div className="flex items-center gap-2">
+                      <div className="w-2 h-2 bg-indigo-500 rounded-full animate-pulse"></div>
+                      <Label className="text-base sm:text-lg font-semibold text-indigo-900 dark:text-indigo-100">
+                        Custom Variables
+                      </Label>
+                    </div>
+                    <Button
+                      type="button"
+                      onClick={addCustomVariable}
+                      variant="outline"
+                      size="sm"
+                      className="border-indigo-300 hover:bg-indigo-50 dark:hover:bg-indigo-950"
+                    >
+                      <Plus className="w-4 h-4 mr-1" />
+                      Add Variable
+                    </Button>
+                  </div>
+                  <p className="text-xs sm:text-sm text-indigo-700 dark:text-indigo-300 mb-3">
+                    Define custom AI-generated variables to enrich your outreach. Examples: "problem", "pain_point", "solution_fit"
+                  </p>
+
+                  <div className="space-y-3">
+                    {formData.customVariables.map((variable, index) => (
+                      <div key={variable.id} className="border border-indigo-200 dark:border-indigo-800 rounded-lg p-4 space-y-3">
+                        <div className="flex items-center justify-between mb-2">
+                          <span className="text-sm font-medium text-indigo-900 dark:text-indigo-100">
+                            Variable {index + 1}
+                          </span>
+                          {formData.customVariables.length > 1 && (
+                            <Button
+                              type="button"
+                              onClick={() => removeCustomVariable(variable.id)}
+                              variant="ghost"
+                              size="sm"
+                              className="text-red-500 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-950"
+                            >
+                              <X className="w-4 h-4" />
+                            </Button>
+                          )}
+                        </div>
+
+                        <div className="space-y-2">
+                          <Label htmlFor={`variable-name-${variable.id}`} className="text-sm">
+                            Variable Name
+                          </Label>
+                          <Input
+                            id={`variable-name-${variable.id}`}
+                            placeholder="e.g., pain_point, problem, solution_fit"
+                            value={variable.name}
+                            onChange={(e) => updateCustomVariable(variable.id, 'name', e.target.value)}
+                            className="bg-white dark:bg-gray-900 border-indigo-300 dark:border-indigo-700"
+                          />
+                        </div>
+
+                        <div className="space-y-2">
+                          <Label htmlFor={`variable-prompt-${variable.id}`} className="text-sm">
+                            AI Prompt
+                          </Label>
+                          <Textarea
+                            id={`variable-prompt-${variable.id}`}
+                            placeholder="Describe what the AI should generate for this variable..."
+                            value={variable.prompt}
+                            onChange={(e) => updateCustomVariable(variable.id, 'prompt', e.target.value)}
+                            className="bg-white dark:bg-gray-900 border-indigo-300 dark:border-indigo-700 min-h-[80px]"
+                          />
+                        </div>
+                      </div>
+                    ))}
+                  </div>
                 </div>
               </Card>
 

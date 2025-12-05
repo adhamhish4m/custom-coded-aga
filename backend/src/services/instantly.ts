@@ -44,7 +44,7 @@ class InstantlyService {
         last_name: lead.last_name,
         company_name: lead.company,
         personalization: lead.personalized_message,
-        // Custom variables
+        // Custom variables (static fields)
         company_website: lead.company_url || '',
         linkedin_url: lead.linkedin_url || '',
         job_title: lead.job_title || '',
@@ -52,6 +52,13 @@ class InstantlyService {
         company_industry: lead.company_industry || '',
         headline: lead.headline || ''
       };
+
+      // Add dynamic custom variables
+      if (lead.custom_variables) {
+        Object.entries(lead.custom_variables).forEach(([key, value]) => {
+          instantlyLead[key] = value;
+        });
+      }
 
       const response = await axios.post(`${this.baseUrl}/leads`, instantlyLead, {
         headers: {
@@ -85,21 +92,32 @@ class InstantlyService {
     }
 
     try {
-      const instantlyLeads: InstantlyLead[] = leads.map(lead => ({
-        campaign: campaignId,
-        email: lead.email,
-        first_name: lead.first_name,
-        last_name: lead.last_name,
-        company_name: lead.company,
-        personalization: lead.personalized_message,
-        // Custom variables
-        company_website: lead.company_url || '',
-        linkedin_url: lead.linkedin_url || '',
-        job_title: lead.job_title || '',
-        company_state: lead.company_state || '',
-        company_industry: lead.company_industry || '',
-        headline: lead.headline || ''
-      }));
+      const instantlyLeads: InstantlyLead[] = leads.map(lead => {
+        const instantlyLead: InstantlyLead = {
+          campaign: campaignId,
+          email: lead.email,
+          first_name: lead.first_name,
+          last_name: lead.last_name,
+          company_name: lead.company,
+          personalization: lead.personalized_message,
+          // Custom variables (static fields)
+          company_website: lead.company_url || '',
+          linkedin_url: lead.linkedin_url || '',
+          job_title: lead.job_title || '',
+          company_state: lead.company_state || '',
+          company_industry: lead.company_industry || '',
+          headline: lead.headline || ''
+        };
+
+        // Add dynamic custom variables
+        if (lead.custom_variables) {
+          Object.entries(lead.custom_variables).forEach(([key, value]) => {
+            instantlyLead[key] = value;
+          });
+        }
+
+        return instantlyLead;
+      });
 
       // Process in batches of 100 (Instantly API limit)
       const batchSize = 100;

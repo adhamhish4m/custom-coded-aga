@@ -1,7 +1,7 @@
 import axios from 'axios';
 import pRetry from 'p-retry';
 import { env } from '../../config/env.js';
-import type { PersonalizationRequest, PersonalizationResponse } from '../../types/index.js';
+import type { PersonalizationRequest, PersonalizationResponse, CustomVariable } from '../../types/index.js';
 
 interface OpenRouterMessage {
   role: 'system' | 'user' | 'assistant';
@@ -25,13 +25,13 @@ class ClaudeService {
     this.apiKey = env.OPENROUTER_API_KEY;
   }
 
-  async personalize(request: PersonalizationRequest): Promise<PersonalizationResponse> {
+  async personalize(request: PersonalizationRequest, customVariables?: CustomVariable[]): Promise<PersonalizationResponse> {
     const runPersonalization = async (): Promise<PersonalizationResponse> => {
       try {
         const messages: OpenRouterMessage[] = [
           {
             role: 'system',
-            content: this.buildSystemPrompt(request)
+            content: this.buildSystemPrompt(request, customVariables)
           },
           {
             role: 'user',
@@ -70,9 +70,21 @@ class ClaudeService {
             throw new Error('No personalized_sentence in response');
           }
 
-          return {
+          const response: PersonalizationResponse = {
             personalized_sentence: parsed.personalized_sentence
           };
+
+          // Extract custom variables if they exist in the response
+          if (customVariables && customVariables.length > 0) {
+            response.custom_variables = {};
+            for (const variable of customVariables) {
+              if (parsed[variable.name]) {
+                response.custom_variables[variable.name] = parsed[variable.name];
+              }
+            }
+          }
+
+          return response;
         } catch (parseError) {
           console.error('Failed to parse Claude response:', content);
           throw new Error('Invalid JSON response from Claude');
@@ -102,7 +114,27 @@ class ClaudeService {
     });
   }
 
-  private buildSystemPrompt(request: PersonalizationRequest): string {
+  private buildSystemPrompt(request: PersonalizationRequest, customVariables?: CustomVariable[]): string {
+    let jsonFormat = `{
+  "personalized_sentence": "your personalized message here"`;
+
+    if (customVariables && customVariables.length > 0) {
+      for (const variable of customVariables) {
+        jsonFormat += `,
+  "${variable.name}": "generated value for ${variable.name}"`;
+      }
+    }
+
+    jsonFormat += '\n}';
+
+    let customVariablesSection = '';
+    if (customVariables && customVariables.length > 0) {
+      customVariablesSection = '\n\nAdditional Custom Variables:\n';
+      for (const variable of customVariables) {
+        customVariablesSection += `- ${variable.name}: ${variable.prompt}\n`;
+      }
+    }
+
     return `${request.systemPrompt}
 
 Task: ${request.task}
@@ -111,20 +143,19 @@ Guidelines:
 ${request.guidelines}
 
 Example Output:
-${request.example}
+${request.example}${customVariablesSection}
 
 IMPORTANT: You must return ONLY valid JSON in this exact format:
-{
-  "personalized_sentence": "your personalized message here"
-}
+${jsonFormat}
 
 Constraints:
-- Maximum 25 words
+- Maximum 25 words for personalized_sentence
 - Grade 6 reading level
 - Conversational tone
 - No questions or meeting requests
 - Only use information provided in the research
 - Be specific and relevant to their company/industry
+- Generate ALL requested custom variables based on the research and lead information
 `;
   }
 

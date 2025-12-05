@@ -1,7 +1,7 @@
 import { perplexityService } from './ai/perplexity.js';
 import { claudeService } from './ai/claude.js';
 import { supabaseService } from './supabase.js';
-import type { Lead, EnrichedLead, PersonalizationRequest } from '../types/index.js';
+import type { Lead, EnrichedLead, PersonalizationRequest, CustomVariable } from '../types/index.js';
 
 interface PersonalizationConfig {
   perplexityPrompt: string;
@@ -13,6 +13,7 @@ interface PersonalizationConfig {
   userId: string;
   runId?: string;
   campaignId?: string;
+  customVariables?: CustomVariable[];
 }
 
 class PersonalizationService {
@@ -60,9 +61,12 @@ class PersonalizationService {
           task: config.promptTask,
           guidelines: config.promptGuidelines,
           example: config.promptExample
-        });
+        }, config.customVariables);
 
         enrichedLead.personalized_message = personalizationResponse.personalized_sentence;
+        if (personalizationResponse.custom_variables) {
+          enrichedLead.custom_variables = personalizationResponse.custom_variables;
+        }
         enrichedLead.enrichment_status = 'enriched';
 
         console.log(`✓ Successfully personalized for ${lead.email}`);

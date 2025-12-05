@@ -48,7 +48,8 @@ router.post('/process', upload.single('csv_file'), async (req: Request, res: Res
       apolloUrl,
       leadCount,
       demo,
-      notifyOnComplete
+      notifyOnComplete,
+      customVariables
     } = req.body;
 
     // Generate run_id if not provided
@@ -72,7 +73,8 @@ router.post('/process', upload.single('csv_file'), async (req: Request, res: Res
       leadCount: leadCount ? parseInt(leadCount, 10) : undefined,
       demo,
       notifyOnComplete: notifyOnComplete === 'true' || notifyOnComplete === true,
-      csv_file: req.file
+      csv_file: req.file,
+      customVariables: customVariables ? JSON.parse(customVariables) : undefined
     };
 
     // Validate input

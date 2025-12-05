@@ -193,16 +193,26 @@ export function SimplifiedCampaignPage() {
       leads.forEach(lead => {
         const leadDataArray = Array.isArray(lead.lead_data) ? lead.lead_data : [lead.lead_data];
         leadDataArray.forEach((data: any) => {
+          // Debug: Log the first lead to see structure
+          if (customVariableNames.size === 0) {
+            console.log('Sample lead data:', data);
+            console.log('Has personalized_message:', !!data?.personalized_message);
+            console.log('Has custom_variables:', !!data?.custom_variables);
+            if (data?.custom_variables) {
+              console.log('Custom variables:', data.custom_variables);
+            }
+          }
+
           if (data?.custom_variables) {
             Object.keys(data.custom_variables).forEach(key => customVariableNames.add(key));
           }
         });
       });
 
-      // Prepare CSV headers: base columns + custom variables
+      // Prepare CSV headers: base columns + personalized message + custom variables
       const baseHeaders = [
         'First Name', 'Last Name', 'Company Name', 'Company Website',
-        'Email', 'LinkedIn', 'Company State'
+        'Email', 'LinkedIn', 'Company State', 'Personalized Message'
       ];
       const customVarHeaders = Array.from(customVariableNames).sort();
       const csvHeaders = [...baseHeaders, ...customVarHeaders];
@@ -218,7 +228,8 @@ export function SimplifiedCampaignPage() {
             data?.company_url || '',
             data?.email || '',
             data?.linkedin_url || '',
-            data?.company_state || ''
+            data?.company_state || '',
+            data?.personalized_message || ''
           ];
 
           // Add custom variable values in the same order as headers

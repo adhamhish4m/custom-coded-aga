@@ -179,30 +179,31 @@ export function SimplifiedCampaignPage() {
     }
 
     try {
-      // Prepare CSV data
+      // Prepare CSV data with proper column mapping
       const csvHeaders = [
-        'First Name', 'Last Name', 'Company', 'Website', 'Email', 
-        'LinkedIn URL', 'Company LinkedIn URL', 'Location', 'Company Headcount', 'Company Industry', 
-        'Phone Number', 'Personalized Sentence'
+        'First Name', 'Last Name', 'LinkedIn', 'Company Website', 'Email',
+        'Job Title', 'Industry', 'Employee Count', 'Company Name',
+        'Company LinkedIn URL', 'Phone Number', 'Location', 'Personalized Sentence'
       ];
       const csvRows = leads.flatMap(lead => {
         const leadDataArray = Array.isArray(lead.lead_data) ? lead.lead_data : [lead.lead_data];
         return leadDataArray.map((data: any) => {
           const firstName = data?.first_name || '';
           const lastName = data?.last_name || '';
-          
+
           return [
             firstName || 'N/A',
             lastName || 'N/A',
-            data?.company || data?.organization || 'N/A',
+            data?.linkedin_url || 'N/A',
             data?.company_url || data?.website || data?.company_website || 'N/A',
             data?.email || 'N/A',
-            data?.linkedin_url || 'N/A',
+            data?.job_title || data?.title || data?.headline || data?.position || 'N/A',
+            data?.company_industry || data?.industry || 'N/A',
+            data?.company_headcount || data?.headcount || 'N/A',
+            data?.company || data?.organization || data?.company_name || 'N/A',
             data?.company_linkedin_url || 'N/A',
-            data?.location || 'N/A',
-            data?.company_headcount || 'N/A',
-            data?.company_industry || 'N/A',
             data?.phone_number || 'N/A',
+            data?.location || 'N/A',
             data?.personalized_message || lead.personalized_message || 'Not generated'
           ];
         });

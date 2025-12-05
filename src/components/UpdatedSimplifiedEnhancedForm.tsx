@@ -477,7 +477,10 @@ IMPORTANT: If you cannot generate a message, return an empty string.`);
       submissionData.append('promptGuidelines', '• Use a conversational tone that sounds human and natural\n• Keep it short — maximum 25 words\n• Write at a grade 6 reading level using simple language');
       submissionData.append('promptExample', 'Instead of: "I appreciate how Heaven\'s Pets combines heartfelt, personalized pet cremation services with thoughtful keepsakes, truly honoring each pet\'s unique memory."\n\nWrite: "I like how Heaven\'s Pets gives loving pet cremation services and keepsakes that honor each pet."');
       submissionData.append('personalizationStrategy', 'company-achievements');
-      submissionData.append('customVariables', JSON.stringify(formData.customVariables));
+
+      // Filter out empty custom variables before sending
+      const validCustomVariables = formData.customVariables.filter(v => v.name.trim() && v.prompt.trim());
+      submissionData.append('customVariables', JSON.stringify(validCustomVariables));
 
       if (formData.leadSource === 'apollo') {
         submissionData.append('apolloUrl', formData.apolloUrl);
@@ -502,7 +505,7 @@ IMPORTANT: If you cannot generate a message, return an empty string.`);
         promptExample: 'Instead of: "I appreciate how Heaven\'s Pets combines heartfelt, personalized pet cremation services with thoughtful keepsakes, truly honoring each pet\'s unique memory."\n\nWrite: "I like how Heaven\'s Pets gives loving pet cremation services and keepsakes that honor each pet."',
         personalizationStrategy: 'company-achievements',
         notifyOnComplete: formData.notifyOnComplete,
-        customVariables: formData.customVariables
+        customVariables: validCustomVariables
       };
 
       if (formData.leadSource === 'apollo') {
@@ -548,7 +551,7 @@ IMPORTANT: If you cannot generate a message, return an empty string.`);
             leadCount: formData.leadSource === 'apollo' ? formData.leadCount : undefined,
             rerun: 'false',
             notifyOnComplete: formData.notifyOnComplete,
-            customVariables: formData.customVariables
+            customVariables: validCustomVariables
           };
 
           const backendResponse = await agaBackend.processCampaign(backendRequest);

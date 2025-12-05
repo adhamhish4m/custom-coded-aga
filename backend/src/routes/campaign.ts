@@ -30,6 +30,8 @@ const upload = multer({
 router.post('/process', upload.single('csv_file'), async (req: Request, res: Response) => {
   try {
     console.log('\n📥 Received campaign processing request');
+    console.log('customVariables received:', req.body.customVariables);
+    console.log('customVariables type:', typeof req.body.customVariables);
 
     // Extract data from request
     const {
@@ -74,7 +76,20 @@ router.post('/process', upload.single('csv_file'), async (req: Request, res: Res
       demo,
       notifyOnComplete: notifyOnComplete === 'true' || notifyOnComplete === true,
       csv_file: req.file,
-      customVariables: customVariables ? JSON.parse(customVariables) : undefined
+      customVariables: (() => {
+        if (!customVariables) return undefined;
+        try {
+          // Check if it's already a valid JSON string
+          if (typeof customVariables === 'string') {
+            return JSON.parse(customVariables);
+          }
+          // If it's already an object, return as-is
+          return customVariables;
+        } catch (error) {
+          console.error('Failed to parse customVariables:', customVariables);
+          return undefined;
+        }
+      })()
     };
 
     // Validate input

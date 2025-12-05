@@ -179,32 +179,58 @@ export function SimplifiedCampaignPage() {
     }
 
     try {
-      // Prepare CSV data with proper column mapping
+      // Prepare CSV data with all columns from input CSV
       const csvHeaders = [
-        'First Name', 'Last Name', 'LinkedIn', 'Company Website', 'Email',
-        'Job Title', 'Industry', 'Employee Count', 'Company Name',
-        'Company LinkedIn URL', 'Phone Number', 'Location', 'Personalized Sentence'
+        'First Name', 'Last Name', 'Company Name', 'Company Website', 'Email',
+        'LinkedIn', 'Title', 'Industry', 'Headline', 'Employees Count',
+        'Keywords', 'Company Annual Revenue Clean', 'Company SEO Description',
+        'Company Short Description', 'Company Linkedin', 'Company Total Funding Clean',
+        'Company Technologies', 'Email Domain Catchall', 'Twitter URL', 'Facebook URL',
+        'Person ID', 'Company ID', 'Company Phone Number', 'Company Twitter',
+        'Company Facebook', 'Company Market Cap', 'Company Founded Year',
+        'Company Domain', 'Company Raw Address', 'Company Street Address',
+        'Company City', 'Company State', 'Company Country', 'Company Postal Code',
+        'Personalized Message'
       ];
       const csvRows = leads.flatMap(lead => {
         const leadDataArray = Array.isArray(lead.lead_data) ? lead.lead_data : [lead.lead_data];
         return leadDataArray.map((data: any) => {
-          const firstName = data?.first_name || '';
-          const lastName = data?.last_name || '';
-
           return [
-            firstName || 'N/A',
-            lastName || 'N/A',
-            data?.linkedin_url || 'N/A',
-            data?.company_url || data?.website || data?.company_website || 'N/A',
-            data?.email || 'N/A',
-            data?.job_title || data?.title || data?.headline || data?.position || 'N/A',
-            data?.company_industry || data?.industry || 'N/A',
-            data?.company_headcount || data?.headcount || 'N/A',
-            data?.company || data?.organization || data?.company_name || 'N/A',
-            data?.company_linkedin_url || 'N/A',
-            data?.phone_number || 'N/A',
-            data?.location || 'N/A',
-            data?.personalized_message || lead.personalized_message || 'Not generated'
+            data?.first_name || '',
+            data?.last_name || '',
+            data?.company || '',
+            data?.company_url || '',
+            data?.email || '',
+            data?.linkedin_url || '',
+            data?.job_title || '',
+            data?.company_industry || '',
+            data?.headline || '',
+            data?.company_headcount || '',
+            data?.keywords || '',
+            data?.company_annual_revenue || '',
+            data?.company_seo_description || '',
+            data?.company_short_description || '',
+            data?.company_linkedin_url || '',
+            data?.company_total_funding || '',
+            data?.company_technologies || '',
+            data?.email_domain_catchall || '',
+            data?.twitter_url || '',
+            data?.facebook_url || '',
+            data?.person_id || '',
+            data?.company_id || '',
+            data?.company_phone_number || '',
+            data?.company_twitter || '',
+            data?.company_facebook || '',
+            data?.company_market_cap || '',
+            data?.company_founded_year || '',
+            data?.company_domain || '',
+            data?.company_raw_address || '',
+            data?.company_street_address || '',
+            data?.company_city || '',
+            data?.company_state || '',
+            data?.company_country || '',
+            data?.company_postal_code || '',
+            data?.personalized_message || lead.personalized_message || ''
           ];
         });
       });

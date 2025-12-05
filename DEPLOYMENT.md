@@ -40,18 +40,18 @@ Go to **Variables** tab and add all these variables:
 NODE_ENV=production
 PORT=3001
 
-# Supabase
+# Supabase (copy from your Supabase dashboard -> Settings -> API)
 SUPABASE_URL=https://erxxyzvsmjkyubdxqcfd.supabase.co
-SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVyeHh5enZzbWpreXViZHhxY2ZkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQ3OTA4MjEsImV4cCI6MjA4MDM2NjgyMX0.wyvHRVeqjF9vmLGfMIIPJ61qnFA-7blB8S7OVNapITE
-SUPABASE_SERVICE_ROLE_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVyeHh5enZzbWpreXViZHhxY2ZkIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc2NDc5MDgyMSwiZXhwIjoyMDgwMzY2ODIxfQ.3ZV203Cv3T1oNmdNMvdipkHcN78FAw1HwAuyNeEYMEM
-SUPABASE_DB_PASSWORD=Du6Tr!Qq#LmGX3A
+SUPABASE_ANON_KEY=your_supabase_anon_key
+SUPABASE_SERVICE_ROLE_KEY=your_supabase_service_role_key
+SUPABASE_DB_PASSWORD=your_database_password
 
-# AI Services
-PERPLEXITY_API_KEY=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
-OPENROUTER_API_KEY=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
+# AI Services (copy from your API provider dashboards)
+PERPLEXITY_API_KEY=your_perplexity_api_key
+OPENROUTER_API_KEY=your_openrouter_api_key
 
-# Notifications
-SLACK_WEBHOOK_URL=https://hooks.slack.com/services/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
+# Notifications (copy from Slack webhook settings)
+SLACK_WEBHOOK_URL=your_slack_webhook_url
 
 # Frontend URL (add after deploying frontend)
 FRONTEND_URL=https://your-app.vercel.app
@@ -100,7 +100,7 @@ Go to **Settings** → **Environment Variables** and add:
 
 ```bash
 VITE_SUPABASE_URL=https://erxxyzvsmjkyubdxqcfd.supabase.co
-VITE_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVyeHh5enZzbWpreXViZHhxY2ZkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQ3OTA4MjEsImV4cCI6MjA4MDM2NjgyMX0.wyvHRVeqjF9vmLGfMIIPJ61qnFA-7blB8S7OVNapITE
+VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
 VITE_BACKEND_URL=https://your-backend.up.railway.app
 ```
 

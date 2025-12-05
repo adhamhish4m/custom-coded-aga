@@ -66,6 +66,13 @@ class ClaudeService {
         try {
           const parsed = JSON.parse(content);
 
+          // Debug logging for custom variables
+          if (customVariables && customVariables.length > 0) {
+            console.log(`[Claude] Custom variables requested: ${customVariables.map(v => v.name).join(', ')}`);
+            console.log(`[Claude] Raw AI response:`, content);
+            console.log(`[Claude] Parsed response keys:`, Object.keys(parsed));
+          }
+
           if (!parsed.personalized_sentence) {
             throw new Error('No personalized_sentence in response');
           }
@@ -77,10 +84,18 @@ class ClaudeService {
           // Extract custom variables if they exist in the response
           if (customVariables && customVariables.length > 0) {
             response.custom_variables = {};
+            let foundCount = 0;
             for (const variable of customVariables) {
               if (parsed[variable.name]) {
                 response.custom_variables[variable.name] = parsed[variable.name];
+                foundCount++;
+              } else {
+                console.warn(`[Claude] Custom variable "${variable.name}" not found in AI response`);
               }
+            }
+            console.log(`[Claude] Found ${foundCount}/${customVariables.length} custom variables in response`);
+            if (foundCount === 0) {
+              console.warn(`[Claude] ⚠️ No custom variables found in AI response despite being requested!`);
             }
           }
 

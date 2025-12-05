@@ -66,6 +66,9 @@ class PersonalizationService {
         enrichedLead.personalized_message = personalizationResponse.personalized_sentence;
         if (personalizationResponse.custom_variables) {
           enrichedLead.custom_variables = personalizationResponse.custom_variables;
+          console.log(`[Personalization] Added custom variables to ${lead.email}:`, Object.keys(personalizationResponse.custom_variables));
+        } else if (config.customVariables && config.customVariables.length > 0) {
+          console.warn(`[Personalization] ⚠️ Custom variables requested but not received for ${lead.email}`);
         }
         enrichedLead.enrichment_status = 'enriched';
 
@@ -116,6 +119,13 @@ class PersonalizationService {
 
           // Save to database immediately if successful
           if (enrichedLead.enrichment_status === 'enriched' && enrichedLead.personalized_message) {
+            // Log what we're saving to database
+            console.log(`[Database] Saving lead ${enrichedLead.email} with:`, {
+              has_personalized_message: !!enrichedLead.personalized_message,
+              has_custom_variables: !!enrichedLead.custom_variables,
+              custom_variable_keys: enrichedLead.custom_variables ? Object.keys(enrichedLead.custom_variables) : 'none'
+            });
+
             const saved = await supabaseService.appendLeadToCampaign(
               config.campaignLeadsId,
               enrichedLead

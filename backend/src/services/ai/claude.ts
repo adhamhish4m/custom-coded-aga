@@ -129,6 +129,33 @@ class ClaudeService {
     });
   }
 
+  /**
+   * Replace template variables like {{field_name}} with actual lead data
+   */
+  private replaceTemplateVariables(prompt: string, lead: any): string {
+    const replacedFields: string[] = [];
+    const unavailableFields: string[] = [];
+
+    const result = prompt.replace(/\{\{(\w+)\}\}/g, (match, fieldName) => {
+      const value = lead[fieldName];
+      if (value !== undefined && value !== null && value !== '') {
+        replacedFields.push(fieldName);
+        return String(value);
+      }
+      unavailableFields.push(fieldName);
+      return `[${fieldName} not available]`;
+    });
+
+    if (replacedFields.length > 0) {
+      console.log(`[Template] Replaced fields: ${replacedFields.join(', ')}`);
+    }
+    if (unavailableFields.length > 0) {
+      console.log(`[Template] Unavailable fields: ${unavailableFields.join(', ')}`);
+    }
+
+    return result;
+  }
+
   private buildSystemPrompt(request: PersonalizationRequest, customVariables?: CustomVariable[]): string {
     let jsonFormat = `{
   "personalized_sentence": "your personalized message here"`;
@@ -146,7 +173,9 @@ class ClaudeService {
     if (customVariables && customVariables.length > 0) {
       customVariablesSection = '\n\nAdditional Custom Variables:\n';
       for (const variable of customVariables) {
-        customVariablesSection += `- ${variable.name}: ${variable.prompt}\n`;
+        // Replace template variables with actual lead data
+        const promptWithData = this.replaceTemplateVariables(variable.prompt, request.lead);
+        customVariablesSection += `- ${variable.name}: ${promptWithData}\n`;
       }
     }
 

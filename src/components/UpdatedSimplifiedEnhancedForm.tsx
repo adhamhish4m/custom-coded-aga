@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Upload, Rocket, Loader2, AlertTriangle, CheckCircle, XCircle, Clock, Plus, X } from 'lucide-react';
+import { Upload, Rocket, Loader2, AlertTriangle, CheckCircle, XCircle, Clock, Plus, X, GripVertical } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -30,6 +30,31 @@ interface FormData {
   notifyOnComplete: boolean;
   customVariables: CustomVariable[];
 }
+
+// Available lead data fields that can be used in custom variable prompts
+const AVAILABLE_LEAD_FIELDS = [
+  { name: 'first_name', label: 'First Name', category: 'Person' },
+  { name: 'last_name', label: 'Last Name', category: 'Person' },
+  { name: 'email', label: 'Email', category: 'Person' },
+  { name: 'job_title', label: 'Job Title', category: 'Person' },
+  { name: 'linkedin_url', label: 'LinkedIn URL', category: 'Person' },
+  { name: 'headline', label: 'Headline', category: 'Person' },
+  { name: 'location', label: 'Location', category: 'Person' },
+  { name: 'phone_number', label: 'Phone Number', category: 'Person' },
+  { name: 'company', label: 'Company Name', category: 'Company' },
+  { name: 'company_url', label: 'Company Website', category: 'Company' },
+  { name: 'company_linkedin_url', label: 'Company LinkedIn', category: 'Company' },
+  { name: 'company_industry', label: 'Industry', category: 'Company' },
+  { name: 'company_headcount', label: 'Employee Count', category: 'Company' },
+  { name: 'company_state', label: 'Company State', category: 'Company' },
+  { name: 'company_city', label: 'Company City', category: 'Company' },
+  { name: 'company_country', label: 'Company Country', category: 'Company' },
+  { name: 'company_founded_year', label: 'Founded Year', category: 'Company' },
+  { name: 'company_technologies', label: 'Technologies/Tech Stack', category: 'Company' },
+  { name: 'company_description', label: 'Company Description', category: 'Company' },
+  { name: 'company_annual_revenue', label: 'Annual Revenue', category: 'Company' },
+  { name: 'keywords', label: 'Keywords', category: 'Other' },
+];
 
 interface UpdatedSimplifiedEnhancedFormProps {
   onSubmissionSuccess: (data: any) => void;
@@ -291,6 +316,47 @@ IMPORTANT: If you cannot generate a message, return an empty string.`);
         v.id === id ? { ...v, [field]: value } : v
       )
     }));
+  };
+
+  // Drag and drop handlers for lead fields into custom variable prompts
+  const handleFieldDragStart = (e: React.DragEvent, fieldName: string) => {
+    e.dataTransfer.setData('fieldName', fieldName);
+    e.dataTransfer.effectAllowed = 'copy';
+  };
+
+  const handlePromptDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'copy';
+  };
+
+  const handlePromptDrop = (e: React.DragEvent, variableId: string) => {
+    e.preventDefault();
+    const fieldName = e.dataTransfer.getData('fieldName');
+
+    if (fieldName) {
+      const variable = formData.customVariables.find(v => v.id === variableId);
+      if (variable) {
+        // Get the textarea element and cursor position
+        const textarea = e.target as HTMLTextAreaElement;
+        const cursorPosition = textarea.selectionStart || variable.prompt.length;
+
+        // Insert {{field_name}} at cursor position
+        const template = `{{${fieldName}}}`;
+        const newPrompt =
+          variable.prompt.slice(0, cursorPosition) +
+          template +
+          variable.prompt.slice(cursorPosition);
+
+        updateCustomVariable(variableId, 'prompt', newPrompt);
+
+        // Show a toast to confirm
+        toast({
+          title: "Field Added",
+          description: `Added {{${fieldName}}} to your prompt`,
+          duration: 2000,
+        });
+      }
+    }
   };
 
   // Check if there are any active runs for the current user
@@ -958,6 +1024,33 @@ IMPORTANT: If you cannot generate a message, return an empty string.`);
                     Define custom AI-generated variables to enrich your outreach. Examples: "problem", "pain_point", "solution_fit"
                   </p>
 
+                  {/* Draggable Lead Fields */}
+                  <div className="mb-4 p-4 bg-gradient-to-br from-indigo-50 to-purple-50 dark:from-indigo-950/30 dark:to-purple-950/30 rounded-lg border border-indigo-200 dark:border-indigo-800">
+                    <div className="flex items-center gap-2 mb-3">
+                      <GripVertical className="w-4 h-4 text-indigo-600" />
+                      <h4 className="text-sm font-semibold text-indigo-900 dark:text-indigo-100">
+                        Available Lead Fields
+                      </h4>
+                    </div>
+                    <p className="text-xs text-indigo-600 dark:text-indigo-400 mb-3">
+                      Drag any field below into your AI Prompt to reference lead data using {`{{field_name}}`} syntax
+                    </p>
+                    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2">
+                      {AVAILABLE_LEAD_FIELDS.map((field) => (
+                        <div
+                          key={field.name}
+                          draggable
+                          onDragStart={(e) => handleFieldDragStart(e, field.name)}
+                          className="flex items-center gap-1 px-2 py-1.5 bg-white dark:bg-gray-900 border border-indigo-300 dark:border-indigo-700 rounded text-xs font-mono text-indigo-700 dark:text-indigo-300 cursor-move hover:bg-indigo-100 dark:hover:bg-indigo-900/50 hover:border-indigo-400 transition-all"
+                          title={`Drag to insert {{${field.name}}}`}
+                        >
+                          <GripVertical className="w-3 h-3 text-indigo-400" />
+                          <span className="truncate">{field.label}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
                   <div className="space-y-3">
                     {formData.customVariables.map((variable, index) => (
                       <div key={variable.id} className="border border-indigo-200 dark:border-indigo-800 rounded-lg p-4 space-y-3">
@@ -993,15 +1086,20 @@ IMPORTANT: If you cannot generate a message, return an empty string.`);
 
                         <div className="space-y-2">
                           <Label htmlFor={`variable-prompt-${variable.id}`} className="text-sm">
-                            AI Prompt
+                            AI Prompt (Drop fields here)
                           </Label>
                           <Textarea
                             id={`variable-prompt-${variable.id}`}
-                            placeholder="Describe what the AI should generate for this variable..."
+                            placeholder="Describe what the AI should generate... Drag and drop fields from above to reference lead data."
                             value={variable.prompt}
                             onChange={(e) => updateCustomVariable(variable.id, 'prompt', e.target.value)}
-                            className="bg-white dark:bg-gray-900 border-indigo-300 dark:border-indigo-700 min-h-[80px]"
+                            onDragOver={handlePromptDragOver}
+                            onDrop={(e) => handlePromptDrop(e, variable.id)}
+                            className="bg-white dark:bg-gray-900 border-indigo-300 dark:border-indigo-700 min-h-[100px] transition-all hover:border-indigo-400 dark:hover:border-indigo-600"
                           />
+                          <p className="text-xs text-indigo-500 dark:text-indigo-400">
+                            Example: "Identify what CRM {`{{company_technologies}}`} uses. Return 'HubSpot', 'Salesforce', or skip if neither."
+                          </p>
                         </div>
                       </div>
                     ))}

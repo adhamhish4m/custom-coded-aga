@@ -99,6 +99,9 @@ class AGABackendClient {
       if (value !== undefined && value !== null) {
         if (value instanceof File) {
           formData.append(key, value);
+        } else if (typeof value === 'object') {
+          // For objects and arrays (like customVariables), JSON.stringify them
+          formData.append(key, JSON.stringify(value));
         } else {
           formData.append(key, String(value));
         }
@@ -183,6 +186,9 @@ class AGABackendClient {
       if (value !== undefined && value !== null) {
         if (value instanceof File) {
           formData.append(key, value);
+        } else if (typeof value === 'object') {
+          // For objects and arrays (like customVariables), JSON.stringify them
+          formData.append(key, JSON.stringify(value));
         } else {
           formData.append(key, String(value));
         }

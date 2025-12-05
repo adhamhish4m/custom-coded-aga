@@ -23,6 +23,7 @@ export interface CampaignProcessRequest {
   leadCount?: number;
   demo?: string;
   rerun?: string;
+  notifyOnComplete?: boolean;
 }
 
 export interface CampaignProcessResponse {

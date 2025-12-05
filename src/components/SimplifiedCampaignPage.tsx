@@ -353,7 +353,8 @@ export function SimplifiedCampaignPage() {
         personalizationStrategy: webhookPayload.personalizationStrategy,
         apolloUrl: webhookPayload.apolloUrl,
         leadCount: webhookPayload.leadCount,
-        rerun: 'true'
+        rerun: 'true',
+        notifyOnComplete: webhookPayload.notifyOnComplete || false
       };
 
       const response = await agaBackend.processCampaign(backendRequest);

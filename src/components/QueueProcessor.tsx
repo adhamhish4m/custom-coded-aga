@@ -158,7 +158,8 @@ export function QueueProcessor() {
             promptGuidelines: webhookPayload.promptGuidelines,
             promptExample: webhookPayload.promptExample,
             personalizationStrategy: webhookPayload.personalizationStrategy,
-            rerun: webhookPayload.rerun || 'false'
+            rerun: webhookPayload.rerun || 'false',
+            notifyOnComplete: webhookPayload.notifyOnComplete || false
           };
 
           // Add CSV file if available

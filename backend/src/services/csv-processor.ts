@@ -54,18 +54,18 @@ class CSVProcessorService {
     };
 
     return {
-      first_name: getField('first_name', 'First Name', 'firstName', 'fname'),
-      last_name: getField('last_name', 'Last Name', 'lastName', 'lname'),
-      email: getField('email', 'Email', 'personal_emails', 'work_email'),
-      job_title: getField('job_title', 'Job Title', 'headline', 'title', 'position'),
-      linkedin_url: getField('linkedin_url', 'LinkedIn URL', 'linkedin_profile_url', 'linkedin'),
-      company_linkedin_url: getField('company_linkedin_url', 'Company LinkedIn', 'company_linkedin'),
-      company: getField('company', 'Company', 'organization', 'company_name'),
-      company_url: getField('company_url', 'Company URL', 'organization_website_url', 'website'),
-      location: getField('location', 'Location', 'city', 'country'),
-      company_headcount: getField('company_headcount', 'Company Headcount', 'headcount', 'employees'),
-      company_industry: getField('company_industry', 'Company Industry', 'industry', 'sector'),
-      phone_number: getField('phone_number', 'Phone Number', 'phone', 'mobile'),
+      first_name: getField('First Name', 'first_name', 'firstName', 'fname'),
+      last_name: getField('Last Name', 'last_name', 'lastName', 'lname'),
+      email: getField('Email', 'email', 'personal_emails', 'work_email'),
+      job_title: getField('Job Title', 'job_title', 'headline', 'title', 'position'),
+      linkedin_url: getField('LinkedIn', 'LinkedIn URL', 'linkedin_url', 'linkedin_profile_url'),
+      company_linkedin_url: getField('Company LinkedIn URL', 'company_linkedin_url', 'Company LinkedIn', 'company_linkedin'),
+      company: getField('Company Name', 'company', 'Company', 'organization', 'company_name'),
+      company_url: getField('Company Website', 'company_url', 'Company URL', 'organization_website_url', 'website'),
+      location: getField('Location', 'location', 'city', 'country'),
+      company_headcount: getField('Employee Count', 'company_headcount', 'Company Headcount', 'headcount', 'employees'),
+      company_industry: getField('Industry', 'company_industry', 'Company Industry', 'industry', 'sector'),
+      phone_number: getField('Phone Number', 'phone_number', 'phone', 'mobile'),
       linkedin_post: getField('linkedin_post', 'LinkedIn Post', 'recent_post'),
       creator_name: getField('creator_name', 'Creator Name')
     };

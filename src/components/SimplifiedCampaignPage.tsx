@@ -188,26 +188,36 @@ export function SimplifiedCampaignPage() {
     }
 
     try {
+      // Debug: Log full leads structure
+      console.log('=== CSV EXPORT DEBUG ===');
+      console.log('Total leads:', leads.length);
+      console.log('Full leads data:', leads);
+
       // Collect all unique custom variable names from leads
       const customVariableNames = new Set<string>();
-      leads.forEach(lead => {
+      leads.forEach((lead, leadIndex) => {
+        console.log(`Lead ${leadIndex}:`, lead);
         const leadDataArray = Array.isArray(lead.lead_data) ? lead.lead_data : [lead.lead_data];
-        leadDataArray.forEach((data: any) => {
-          // Debug: Log the first lead to see structure
-          if (customVariableNames.size === 0) {
-            console.log('Sample lead data:', data);
-            console.log('Has personalized_message:', !!data?.personalized_message);
-            console.log('Has custom_variables:', !!data?.custom_variables);
-            if (data?.custom_variables) {
-              console.log('Custom variables:', data.custom_variables);
-            }
-          }
+        console.log(`Lead ${leadIndex} data array length:`, leadDataArray.length);
+
+        leadDataArray.forEach((data: any, dataIndex: number) => {
+          console.log(`Lead ${leadIndex}, Data ${dataIndex}:`, {
+            email: data?.email,
+            has_personalized_message: !!data?.personalized_message,
+            personalized_message: data?.personalized_message,
+            has_custom_variables: !!data?.custom_variables,
+            custom_variables: data?.custom_variables,
+            all_keys: Object.keys(data || {})
+          });
 
           if (data?.custom_variables) {
             Object.keys(data.custom_variables).forEach(key => customVariableNames.add(key));
           }
         });
       });
+
+      console.log('Custom variable names found:', Array.from(customVariableNames));
+      console.log('=== END CSV EXPORT DEBUG ===');
 
       // Prepare CSV headers: base columns + personalized message + custom variables
       const baseHeaders = [

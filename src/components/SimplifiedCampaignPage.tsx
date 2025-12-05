@@ -179,18 +179,10 @@ export function SimplifiedCampaignPage() {
     }
 
     try {
-      // Prepare CSV data with all columns from input CSV
+      // Prepare CSV data with selected columns only
       const csvHeaders = [
-        'First Name', 'Last Name', 'Company Name', 'Company Website', 'Email',
-        'LinkedIn', 'Title', 'Industry', 'Headline', 'Employees Count',
-        'Keywords', 'Company Annual Revenue Clean', 'Company SEO Description',
-        'Company Short Description', 'Company Linkedin', 'Company Total Funding Clean',
-        'Company Technologies', 'Email Domain Catchall', 'Twitter URL', 'Facebook URL',
-        'Person ID', 'Company ID', 'Company Phone Number', 'Company Twitter',
-        'Company Facebook', 'Company Market Cap', 'Company Founded Year',
-        'Company Domain', 'Company Raw Address', 'Company Street Address',
-        'Company City', 'Company State', 'Company Country', 'Company Postal Code',
-        'Personalized Message'
+        'First Name', 'Last Name', 'Company Name', 'Company Website',
+        'Email', 'LinkedIn', 'Company State'
       ];
       const csvRows = leads.flatMap(lead => {
         const leadDataArray = Array.isArray(lead.lead_data) ? lead.lead_data : [lead.lead_data];
@@ -202,35 +194,7 @@ export function SimplifiedCampaignPage() {
             data?.company_url || '',
             data?.email || '',
             data?.linkedin_url || '',
-            data?.job_title || '',
-            data?.company_industry || '',
-            data?.headline || '',
-            data?.company_headcount || '',
-            data?.keywords || '',
-            data?.company_annual_revenue || '',
-            data?.company_seo_description || '',
-            data?.company_short_description || '',
-            data?.company_linkedin_url || '',
-            data?.company_total_funding || '',
-            data?.company_technologies || '',
-            data?.email_domain_catchall || '',
-            data?.twitter_url || '',
-            data?.facebook_url || '',
-            data?.person_id || '',
-            data?.company_id || '',
-            data?.company_phone_number || '',
-            data?.company_twitter || '',
-            data?.company_facebook || '',
-            data?.company_market_cap || '',
-            data?.company_founded_year || '',
-            data?.company_domain || '',
-            data?.company_raw_address || '',
-            data?.company_street_address || '',
-            data?.company_city || '',
-            data?.company_state || '',
-            data?.company_country || '',
-            data?.company_postal_code || '',
-            data?.personalized_message || lead.personalized_message || ''
+            data?.company_state || ''
           ];
         });
       });

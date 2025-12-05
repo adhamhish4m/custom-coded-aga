@@ -31,6 +31,9 @@ export interface CampaignProcessRequest {
   rerun?: string;
   notifyOnComplete?: boolean;
   customVariables?: CustomVariable[];
+  revenueFilterEnabled?: boolean;
+  revenueMin?: number | null;
+  revenueMax?: number | null;
 }
 
 export interface CampaignProcessResponse {

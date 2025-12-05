@@ -51,7 +51,10 @@ router.post('/process', upload.single('csv_file'), async (req: Request, res: Res
       leadCount,
       demo,
       notifyOnComplete,
-      customVariables
+      customVariables,
+      revenueFilterEnabled,
+      revenueMin,
+      revenueMax
     } = req.body;
 
     // Generate run_id if not provided
@@ -89,7 +92,10 @@ router.post('/process', upload.single('csv_file'), async (req: Request, res: Res
           console.error('Failed to parse customVariables:', customVariables);
           return undefined;
         }
-      })()
+      })(),
+      revenueFilterEnabled: revenueFilterEnabled === 'true' || revenueFilterEnabled === true,
+      revenueMin: revenueMin ? parseFloat(revenueMin) : undefined,
+      revenueMax: revenueMax ? parseFloat(revenueMax) : undefined
     };
 
     // Validate input

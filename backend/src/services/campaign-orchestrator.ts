@@ -60,7 +60,20 @@ class CampaignOrchestrator {
         throw new Error('No valid leads found to process');
       }
 
-      console.log(`✓ Found ${leads.length} leads to process`);
+      console.log(`✓ Found ${leads.length} leads before filtering`);
+
+      // Apply revenue filter if enabled
+      if (input.revenueFilterEnabled && (input.revenueMin !== undefined || input.revenueMax !== undefined)) {
+        const originalCount = leads.length;
+        leads = this.filterLeadsByRevenue(leads, input.revenueMin, input.revenueMax);
+        console.log(`✓ Revenue filter applied: ${originalCount} leads -> ${leads.length} leads (filtered ${originalCount - leads.length})`);
+
+        if (leads.length === 0) {
+          throw new Error('No leads remaining after revenue filter. Try adjusting your revenue range.');
+        }
+      }
+
+      console.log(`✓ Processing ${leads.length} leads`);
 
       // Step 3: Update status to "personalizing" and set lead_count
       await supabaseService.updateRunStatus(
@@ -167,6 +180,60 @@ class CampaignOrchestrator {
       console.error('CSV extraction error:', error);
       throw new Error(`Failed to extract leads from CSV: ${error instanceof Error ? error.message : 'Unknown error'}`);
     }
+  }
+
+  /**
+   * Filter leads by annual revenue range
+   */
+  private filterLeadsByRevenue(leads: Lead[], revenueMin?: number, revenueMax?: number): Lead[] {
+    return leads.filter(lead => {
+      const revenueStr = lead.company_annual_revenue;
+
+      // If no revenue data, exclude the lead
+      if (!revenueStr || revenueStr.trim() === '') {
+        return false;
+      }
+
+      // Parse revenue value - handle formats like "$1,000,000" or "1000000" or "1M"
+      let revenue: number;
+      try {
+        // Remove $ and commas
+        let cleanValue = revenueStr.replace(/[$,]/g, '').trim();
+
+        // Handle abbreviations like 1M, 1B, 1K
+        const multipliers: { [key: string]: number } = {
+          'K': 1000,
+          'M': 1000000,
+          'B': 1000000000
+        };
+
+        const lastChar = cleanValue.slice(-1).toUpperCase();
+        if (multipliers[lastChar]) {
+          const numericPart = parseFloat(cleanValue.slice(0, -1));
+          revenue = numericPart * multipliers[lastChar];
+        } else {
+          revenue = parseFloat(cleanValue);
+        }
+
+        // If parsing failed or resulted in NaN, exclude lead
+        if (isNaN(revenue)) {
+          return false;
+        }
+      } catch (error) {
+        console.warn(`Failed to parse revenue for lead ${lead.email}: ${revenueStr}`);
+        return false;
+      }
+
+      // Apply min/max filters
+      if (revenueMin !== undefined && revenue < revenueMin) {
+        return false;
+      }
+      if (revenueMax !== undefined && revenue > revenueMax) {
+        return false;
+      }
+
+      return true;
+    });
   }
 
   /**

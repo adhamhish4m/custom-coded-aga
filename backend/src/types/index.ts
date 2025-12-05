@@ -73,6 +73,9 @@ export interface CampaignInput {
   demo?: string;
   notifyOnComplete?: boolean;
   customVariables?: CustomVariable[];
+  revenueFilterEnabled?: boolean;
+  revenueMin?: number;
+  revenueMax?: number;
 }
 
 export interface PerplexityRequest {

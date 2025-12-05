@@ -29,6 +29,11 @@ interface FormData {
   campaignName: string;
   notifyOnComplete: boolean;
   customVariables: CustomVariable[];
+  revenueFilter: {
+    enabled: boolean;
+    min: number | null;
+    max: number | null;
+  };
 }
 
 // Available lead data fields that can be used in custom variable prompts
@@ -75,7 +80,12 @@ export function UpdatedSimplifiedEnhancedForm({ onSubmissionSuccess }: UpdatedSi
         name: 'personalized_sentence',
         prompt: 'Create a personalized icebreaker sentence about the company (max 25 words)'
       }
-    ]
+    ],
+    revenueFilter: {
+      enabled: false,
+      min: null,
+      max: null
+    }
   });
 
   // Research System Prompt
@@ -548,6 +558,17 @@ IMPORTANT: If you cannot generate a message, return an empty string.`);
       const validCustomVariables = formData.customVariables.filter(v => v.name.trim() && v.prompt.trim());
       submissionData.append('customVariables', JSON.stringify(validCustomVariables));
 
+      // Add revenue filter if enabled
+      if (formData.revenueFilter.enabled) {
+        submissionData.append('revenueFilterEnabled', 'true');
+        if (formData.revenueFilter.min !== null) {
+          submissionData.append('revenueMin', formData.revenueFilter.min.toString());
+        }
+        if (formData.revenueFilter.max !== null) {
+          submissionData.append('revenueMax', formData.revenueFilter.max.toString());
+        }
+      }
+
       if (formData.leadSource === 'apollo') {
         submissionData.append('apolloUrl', formData.apolloUrl);
         submissionData.append('leadCount', formData.leadCount.toString());
@@ -617,7 +638,10 @@ IMPORTANT: If you cannot generate a message, return an empty string.`);
             leadCount: formData.leadSource === 'apollo' ? formData.leadCount : undefined,
             rerun: 'false',
             notifyOnComplete: formData.notifyOnComplete,
-            customVariables: validCustomVariables
+            customVariables: validCustomVariables,
+            revenueFilterEnabled: formData.revenueFilter.enabled,
+            revenueMin: formData.revenueFilter.min,
+            revenueMax: formData.revenueFilter.max
           };
 
           const backendResponse = await agaBackend.processCampaign(backendRequest);
@@ -1104,6 +1128,87 @@ IMPORTANT: If you cannot generate a message, return an empty string.`);
                       </div>
                     ))}
                   </div>
+                </div>
+              </Card>
+
+              {/* Revenue Filter */}
+              <Card className="p-4 sm:p-6 glass-card border-emerald-500/20 hover:border-emerald-500/40 hover:shadow-xl hover:shadow-emerald-500/20 transition-all duration-300">
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between mb-2">
+                    <div className="flex items-center gap-2">
+                      <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></div>
+                      <Label className="text-base sm:text-lg font-semibold text-emerald-900 dark:text-emerald-100">
+                        Annual Revenue Filter
+                      </Label>
+                    </div>
+                    <Switch
+                      id="revenueFilterEnabled"
+                      checked={formData.revenueFilter.enabled}
+                      onCheckedChange={(checked) =>
+                        setFormData(prev => ({
+                          ...prev,
+                          revenueFilter: { ...prev.revenueFilter, enabled: checked }
+                        }))
+                      }
+                    />
+                  </div>
+                  <p className="text-xs sm:text-sm text-emerald-700 dark:text-emerald-300 mb-3">
+                    Filter leads by annual revenue range. Only leads within this range will be processed.
+                  </p>
+
+                  {formData.revenueFilter.enabled && (
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 p-4 bg-emerald-50 dark:bg-emerald-950/30 rounded-lg border border-emerald-200 dark:border-emerald-800">
+                      <div className="space-y-2">
+                        <Label htmlFor="revenueMin" className="text-sm font-medium text-emerald-900 dark:text-emerald-100">
+                          Minimum Revenue ($)
+                        </Label>
+                        <Input
+                          id="revenueMin"
+                          type="number"
+                          placeholder="e.g., 1000000"
+                          value={formData.revenueFilter.min ?? ''}
+                          onChange={(e) =>
+                            setFormData(prev => ({
+                              ...prev,
+                              revenueFilter: {
+                                ...prev.revenueFilter,
+                                min: e.target.value ? parseFloat(e.target.value) : null
+                              }
+                            }))
+                          }
+                          className="bg-white dark:bg-gray-900 border-emerald-300 dark:border-emerald-700"
+                        />
+                        <p className="text-xs text-emerald-600 dark:text-emerald-400">
+                          Leave empty for no minimum
+                        </p>
+                      </div>
+
+                      <div className="space-y-2">
+                        <Label htmlFor="revenueMax" className="text-sm font-medium text-emerald-900 dark:text-emerald-100">
+                          Maximum Revenue ($)
+                        </Label>
+                        <Input
+                          id="revenueMax"
+                          type="number"
+                          placeholder="e.g., 10000000"
+                          value={formData.revenueFilter.max ?? ''}
+                          onChange={(e) =>
+                            setFormData(prev => ({
+                              ...prev,
+                              revenueFilter: {
+                                ...prev.revenueFilter,
+                                max: e.target.value ? parseFloat(e.target.value) : null
+                              }
+                            }))
+                          }
+                          className="bg-white dark:bg-gray-900 border-emerald-300 dark:border-emerald-700"
+                        />
+                        <p className="text-xs text-emerald-600 dark:text-emerald-400">
+                          Leave empty for no maximum
+                        </p>
+                      </div>
+                    </div>
+                  )}
                 </div>
               </Card>
 

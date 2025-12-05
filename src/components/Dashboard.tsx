@@ -315,12 +315,22 @@ export function Dashboard() {
     }
   };
 
-  const getStatusBadge = (status: string, runId: string, queuePosition?: number) => {
+  const getStatusBadge = (status: string, runId: string, queuePosition?: number, processedCount?: number, leadCount?: number) => {
+    // Calculate batch information for personalizing status
+    const batchSize = 10; // Same as backend
+    let statusLabel = '';
+
+    if (status?.toLowerCase() === 'personalizing' && processedCount !== undefined && leadCount && leadCount > 0) {
+      const currentBatch = Math.ceil((processedCount + 1) / batchSize);
+      const totalBatches = Math.ceil(leadCount / batchSize);
+      statusLabel = `Personalizing (Batch ${currentBatch}/${totalBatches})`;
+    }
+
     const statusMap: Record<string, { label: string; className: string }> = {
       'completed': { label: 'Completed', className: 'bg-success/20 text-success-foreground border-success/20' },
       'in_queue': { label: queuePosition ? `Queue #${queuePosition}` : 'In Queue', className: 'bg-blue-500/20 text-blue-400 border-blue-500/20' },
       'extracting': { label: 'Extracting Leads', className: 'bg-warning/20 text-warning-foreground border-warning/20' },
-      'personalizing': { label: 'Personalizing', className: 'bg-warning/20 text-warning-foreground border-warning/20' },
+      'personalizing': { label: statusLabel || 'Personalizing', className: 'bg-warning/20 text-warning-foreground border-warning/20' },
       'processing': { label: 'Processing', className: 'bg-warning/20 text-warning-foreground border-warning/20' },
       'failed': { label: 'Failed', className: 'bg-destructive/20 text-destructive-foreground border-destructive/20' },
       'cancelled': { label: 'Cancelled', className: 'bg-muted/20 text-muted-foreground border-muted/20' },
@@ -584,7 +594,7 @@ export function Dashboard() {
 
                       {/* Right: Status Badge + Actions */}
                       <div className="flex items-center gap-3">
-                        {getStatusBadge(run.status, run.run_id, run.queue_position)}
+                        {getStatusBadge(run.status, run.run_id, run.queue_position, run.processed_count, run.lead_count)}
 
                         <AlertDialog>
                           <DropdownMenu>

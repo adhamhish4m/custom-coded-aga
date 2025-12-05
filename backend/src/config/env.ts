@@ -19,6 +19,9 @@ const envSchema = z.object({
   // Notifications
   SLACK_WEBHOOK_URL: z.string().optional(),
 
+  // Instantly.ai Integration
+  INSTANTLY_API_KEY: z.string().optional(),
+
   // Frontend URL for CORS (production only)
   FRONTEND_URL: z.string().optional(),
 

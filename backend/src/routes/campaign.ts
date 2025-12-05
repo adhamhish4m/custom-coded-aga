@@ -2,6 +2,7 @@ import { Router, Request, Response } from 'express';
 import multer from 'multer';
 import { v4 as uuidv4 } from 'uuid';
 import { campaignOrchestrator } from '../services/campaign-orchestrator.js';
+import { instantlyService } from '../services/instantly.js';
 import type { CampaignInput } from '../types/index.js';
 
 const router = Router();
@@ -240,6 +241,67 @@ router.post('/test', upload.single('csv_file'), async (req: Request, res: Respon
     });
   } catch (error) {
     console.error('Test endpoint error:', error);
+    res.status(500).json({
+      success: false,
+      error: error instanceof Error ? error.message : 'Internal server error'
+    });
+  }
+});
+
+/**
+ * POST /api/campaigns/export-to-instantly
+ * Export campaign leads to Instantly.ai
+ */
+router.post('/export-to-instantly', async (req: Request, res: Response) => {
+  try {
+    const { campaignLeadsId, instantlyCampaignId } = req.body;
+
+    if (!campaignLeadsId || !instantlyCampaignId) {
+      return res.status(400).json({
+        success: false,
+        error: 'Missing required fields: campaignLeadsId and instantlyCampaignId'
+      });
+    }
+
+    console.log(`\n📤 Exporting leads to Instantly campaign: ${instantlyCampaignId}`);
+
+    // Get campaign results
+    const results = await campaignOrchestrator.getCampaignResults(campaignLeadsId);
+
+    if (!results || results.leads.length === 0) {
+      return res.status(404).json({
+        success: false,
+        error: 'No leads found to export'
+      });
+    }
+
+    // Filter only successfully enriched leads
+    const enrichedLeads = results.leads.filter(
+      lead => lead.enrichment_status === 'enriched' && lead.personalized_message
+    );
+
+    if (enrichedLeads.length === 0) {
+      return res.status(400).json({
+        success: false,
+        error: 'No enriched leads with personalized messages found'
+      });
+    }
+
+    // Export to Instantly
+    const instantlyResult = await instantlyService.addLeadsBulk(
+      instantlyCampaignId,
+      enrichedLeads
+    );
+
+    res.json({
+      success: true,
+      message: instantlyResult.message,
+      leads_exported: instantlyResult.leads_added,
+      total_leads: enrichedLeads.length,
+      errors: instantlyResult.errors
+    });
+  } catch (error) {
+    console.error('Export to Instantly error:', error);
     res.status(500).json({
       success: false,
       error: error instanceof Error ? error.message : 'Internal server error'

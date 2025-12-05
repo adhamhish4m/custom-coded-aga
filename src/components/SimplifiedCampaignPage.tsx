@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, RefreshCw, Download, Filter, AlertTriangle, Users, Mail, Building, Globe, MessageSquare, List, LayoutList, Trash2, MoreHorizontal, ChevronLeft, ChevronRight, Phone, MapPin, RotateCcw, CheckCircle, BarChart3 } from 'lucide-react';
+import { ArrowLeft, RefreshCw, Download, Filter, AlertTriangle, Users, Mail, Building, Globe, MessageSquare, List, LayoutList, Trash2, MoreHorizontal, ChevronLeft, ChevronRight, Phone, MapPin, RotateCcw, CheckCircle, BarChart3, Send } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -10,6 +10,9 @@ import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/hooks/useAuth';
@@ -69,6 +72,11 @@ export function SimplifiedCampaignPage() {
   // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
   const [leadsPerPage, setLeadsPerPage] = useState(20);
+
+  // Instantly export state
+  const [showInstantlyDialog, setShowInstantlyDialog] = useState(false);
+  const [instantlyCampaignId, setInstantlyCampaignId] = useState('');
+  const [isExportingToInstantly, setIsExportingToInstantly] = useState(false);
 
   const formatDate = (dateString: string | null | undefined): string => {
     if (!dateString) return 'Not available';
@@ -222,6 +230,58 @@ export function SimplifiedCampaignPage() {
         description: "An error occurred while exporting the data.",
         variant: "destructive",
       });
+    }
+  };
+
+  // Export to Instantly function
+  const exportToInstantly = async () => {
+    if (!campaign || !leads || leads.length === 0) {
+      toast({
+        title: "No Data",
+        description: "No leads available for export.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (!instantlyCampaignId.trim()) {
+      toast({
+        title: "Missing Campaign ID",
+        description: "Please enter an Instantly campaign ID.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsExportingToInstantly(true);
+
+    try {
+      // Get campaign_leads_id from the first lead
+      const campaignLeadsId = leads[0]?.campaign_id;
+
+      if (!campaignLeadsId) {
+        throw new Error('Campaign leads ID not found');
+      }
+
+      const response = await agaBackend.exportToInstantly(campaignLeadsId, instantlyCampaignId.trim());
+
+      toast({
+        title: "Export Successful",
+        description: `Exported ${response.leads_exported} of ${response.total_leads} leads to Instantly.ai`,
+      });
+
+      // Close dialog and reset
+      setShowInstantlyDialog(false);
+      setInstantlyCampaignId('');
+    } catch (error) {
+      console.error('Error exporting to Instantly:', error);
+      toast({
+        title: "Export Failed",
+        description: error instanceof Error ? error.message : "An error occurred while exporting to Instantly.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsExportingToInstantly(false);
     }
   };
 
@@ -530,7 +590,17 @@ export function SimplifiedCampaignPage() {
 
                   <Button onClick={exportToCsv} size="sm" className="hover:shadow-lg hover:shadow-primary/20 transition-all">
                     <Download className="w-4 h-4 mr-2" />
-                    <span className="hidden sm:inline">Export</span>
+                    <span className="hidden sm:inline">Export CSV</span>
+                  </Button>
+
+                  <Button
+                    onClick={() => setShowInstantlyDialog(true)}
+                    size="sm"
+                    variant="outline"
+                    className="hover:shadow-lg hover:shadow-purple-500/20 transition-all border-purple-500/50 text-purple-600 hover:bg-purple-500/10"
+                  >
+                    <Send className="w-4 h-4 mr-2" />
+                    <span className="hidden sm:inline">Export to Instantly</span>
                   </Button>
 
                   <AlertDialog>
@@ -1048,6 +1118,62 @@ export function SimplifiedCampaignPage() {
             )}
           </CardContent>
         </Card>
+
+        {/* Instantly Export Dialog */}
+        <Dialog open={showInstantlyDialog} onOpenChange={setShowInstantlyDialog}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Export to Instantly.ai</DialogTitle>
+              <DialogDescription>
+                Enter your Instantly campaign ID to export {getTotalLeads()} leads with personalized messages.
+              </DialogDescription>
+            </DialogHeader>
+            <div className="grid gap-4 py-4">
+              <div className="grid gap-2">
+                <Label htmlFor="instantly-campaign-id">Instantly Campaign ID</Label>
+                <Input
+                  id="instantly-campaign-id"
+                  placeholder="e.g., 019abcc6-5f33-7fb7-8259-f7c06892ea4e"
+                  value={instantlyCampaignId}
+                  onChange={(e) => setInstantlyCampaignId(e.target.value)}
+                  disabled={isExportingToInstantly}
+                />
+                <p className="text-xs text-muted-foreground">
+                  This is the UUID of your Instantly campaign where leads will be added.
+                </p>
+              </div>
+            </div>
+            <DialogFooter>
+              <Button
+                variant="outline"
+                onClick={() => {
+                  setShowInstantlyDialog(false);
+                  setInstantlyCampaignId('');
+                }}
+                disabled={isExportingToInstantly}
+              >
+                Cancel
+              </Button>
+              <Button
+                onClick={exportToInstantly}
+                disabled={isExportingToInstantly || !instantlyCampaignId.trim()}
+                className="bg-purple-600 hover:bg-purple-700"
+              >
+                {isExportingToInstantly ? (
+                  <>
+                    <RefreshCw className="w-4 h-4 mr-2 animate-spin" />
+                    Exporting...
+                  </>
+                ) : (
+                  <>
+                    <Send className="w-4 h-4 mr-2" />
+                    Export to Instantly
+                  </>
+                )}
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       </div>
     </div>
   );

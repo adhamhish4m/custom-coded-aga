@@ -203,6 +203,29 @@ class AGABackendClient {
   }
 
   /**
+   * Export campaign leads to Instantly.ai
+   */
+  async exportToInstantly(campaignLeadsId: string, instantlyCampaignId: string): Promise<any> {
+    const response = await fetch(`${this.baseUrl}/api/campaigns/export-to-instantly`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        campaignLeadsId,
+        instantlyCampaignId
+      })
+    });
+
+    if (!response.ok) {
+      const error = await response.json().catch(() => ({ error: 'Unknown error' }));
+      throw new Error(error.error || `HTTP ${response.status}`);
+    }
+
+    return response.json();
+  }
+
+  /**
    * Poll for campaign completion
    */
   async pollUntilComplete(

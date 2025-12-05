@@ -49,6 +49,9 @@ railway variables --set OPENROUTER_API_KEY=your_openrouter_api_key_here
 # Notifications
 railway variables --set SLACK_WEBHOOK_URL=your_slack_webhook_url_here
 
+# Instantly.ai Integration
+railway variables --set INSTANTLY_API_KEY=your_instantly_api_key_here
+
 # Configuration
 railway variables --set MAX_BATCH_SIZE=50
 railway variables --set RETRY_ATTEMPTS=3

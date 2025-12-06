@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Upload, Rocket, Loader2, AlertTriangle, CheckCircle, XCircle, Clock, Plus, X, GripVertical } from 'lucide-react';
+import { Upload, Rocket, Loader2, AlertTriangle, CheckCircle, XCircle, Clock, Plus, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -328,44 +328,24 @@ IMPORTANT: If you cannot generate a message, return an empty string.`);
     }));
   };
 
-  // Drag and drop handlers for lead fields into custom variable prompts
-  const handleFieldDragStart = (e: React.DragEvent, fieldName: string) => {
-    e.dataTransfer.setData('fieldName', fieldName);
-    e.dataTransfer.effectAllowed = 'copy';
-  };
+  // Insert field into prompt at the end
+  const handleFieldSelect = (fieldName: string, variableId: string) => {
+    const variable = formData.customVariables.find(v => v.id === variableId);
+    if (variable && fieldName) {
+      // Insert {{field_name}} at the end of the prompt with a space before it if needed
+      const template = `{{${fieldName}}}`;
+      const newPrompt = variable.prompt
+        ? `${variable.prompt} ${template}`
+        : template;
 
-  const handlePromptDragOver = (e: React.DragEvent) => {
-    e.preventDefault();
-    e.dataTransfer.dropEffect = 'copy';
-  };
+      updateCustomVariable(variableId, 'prompt', newPrompt);
 
-  const handlePromptDrop = (e: React.DragEvent, variableId: string) => {
-    e.preventDefault();
-    const fieldName = e.dataTransfer.getData('fieldName');
-
-    if (fieldName) {
-      const variable = formData.customVariables.find(v => v.id === variableId);
-      if (variable) {
-        // Get the textarea element and cursor position
-        const textarea = e.target as HTMLTextAreaElement;
-        const cursorPosition = textarea.selectionStart || variable.prompt.length;
-
-        // Insert {{field_name}} at cursor position
-        const template = `{{${fieldName}}}`;
-        const newPrompt =
-          variable.prompt.slice(0, cursorPosition) +
-          template +
-          variable.prompt.slice(cursorPosition);
-
-        updateCustomVariable(variableId, 'prompt', newPrompt);
-
-        // Show a toast to confirm
-        toast({
-          title: "Field Added",
-          description: `Added {{${fieldName}}} to your prompt`,
-          duration: 2000,
-        });
-      }
+      // Show a toast to confirm
+      toast({
+        title: "Field Added",
+        description: `Added {{${fieldName}}} to your prompt`,
+        duration: 2000,
+      });
     }
   };
 
@@ -1048,32 +1028,6 @@ IMPORTANT: If you cannot generate a message, return an empty string.`);
                     Define custom AI-generated variables to enrich your outreach. Examples: "problem", "pain_point", "solution_fit"
                   </p>
 
-                  {/* Draggable Lead Fields */}
-                  <div className="mb-4 p-4 bg-gradient-to-br from-indigo-50 to-purple-50 dark:from-indigo-950/30 dark:to-purple-950/30 rounded-lg border border-indigo-200 dark:border-indigo-800">
-                    <div className="flex items-center gap-2 mb-3">
-                      <GripVertical className="w-4 h-4 text-indigo-600" />
-                      <h4 className="text-sm font-semibold text-indigo-900 dark:text-indigo-100">
-                        Available Lead Fields
-                      </h4>
-                    </div>
-                    <p className="text-xs text-indigo-600 dark:text-indigo-400 mb-3">
-                      Drag any field below into your AI Prompt to reference lead data using {`{{field_name}}`} syntax
-                    </p>
-                    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2">
-                      {AVAILABLE_LEAD_FIELDS.map((field) => (
-                        <div
-                          key={field.name}
-                          draggable
-                          onDragStart={(e) => handleFieldDragStart(e, field.name)}
-                          className="flex items-center gap-1 px-2 py-1.5 bg-white dark:bg-gray-900 border border-indigo-300 dark:border-indigo-700 rounded text-xs font-mono text-indigo-700 dark:text-indigo-300 cursor-move hover:bg-indigo-100 dark:hover:bg-indigo-900/50 hover:border-indigo-400 transition-all"
-                          title={`Drag to insert {{${field.name}}}`}
-                        >
-                          <GripVertical className="w-3 h-3 text-indigo-400" />
-                          <span className="truncate">{field.label}</span>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
 
                   <div className="space-y-3">
                     {formData.customVariables.map((variable, index) => (
@@ -1109,16 +1063,28 @@ IMPORTANT: If you cannot generate a message, return an empty string.`);
                         </div>
 
                         <div className="space-y-2">
-                          <Label htmlFor={`variable-prompt-${variable.id}`} className="text-sm">
-                            AI Prompt (Drop fields here)
-                          </Label>
+                          <div className="flex items-center justify-between">
+                            <Label htmlFor={`variable-prompt-${variable.id}`} className="text-sm">
+                              AI Prompt
+                            </Label>
+                            <Select onValueChange={(value) => handleFieldSelect(value, variable.id)}>
+                              <SelectTrigger className="w-[200px] h-8 text-xs bg-white dark:bg-gray-900 border-indigo-300 dark:border-indigo-700">
+                                <SelectValue placeholder="+ Insert field" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                {AVAILABLE_LEAD_FIELDS.map((field) => (
+                                  <SelectItem key={field.name} value={field.name} className="text-xs font-mono">
+                                    {field.label}
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                          </div>
                           <Textarea
                             id={`variable-prompt-${variable.id}`}
-                            placeholder="Describe what the AI should generate... Drag and drop fields from above to reference lead data."
+                            placeholder="Describe what the AI should generate... Use the dropdown above to insert lead fields."
                             value={variable.prompt}
                             onChange={(e) => updateCustomVariable(variable.id, 'prompt', e.target.value)}
-                            onDragOver={handlePromptDragOver}
-                            onDrop={(e) => handlePromptDrop(e, variable.id)}
                             className="bg-white dark:bg-gray-900 border-indigo-300 dark:border-indigo-700 min-h-[100px] transition-all hover:border-indigo-400 dark:hover:border-indigo-600"
                           />
                           <p className="text-xs text-indigo-500 dark:text-indigo-400">

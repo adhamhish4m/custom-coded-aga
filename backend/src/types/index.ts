@@ -77,6 +77,7 @@ export interface CampaignInput {
   revenueMin?: number;
   revenueMax?: number;
   skipDuplicates?: boolean;
+  intentSignals?: string;
 }
 
 export interface PerplexityRequest {

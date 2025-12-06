@@ -109,7 +109,7 @@ ON CONFLICT (token_value) DO NOTHING;`;
           <CardTitle className="flex items-center gap-2">
             <Database className="w-5 h-5" />
             Step 1: Create Database Tables
-            {isStepCompleted(1) && <Badge className="bg-success/20 text-success">Completed</Badge>}
+            {isStepCompleted(1) && <Badge className="bg-success/20 text-success hover:bg-success/30 hover:shadow-lg hover:shadow-success/20 hover:scale-105 transition-all duration-200 cursor-pointer">Completed</Badge>}
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -152,7 +152,7 @@ ON CONFLICT (token_value) DO NOTHING;`;
           <CardTitle className="flex items-center gap-2">
             <Code className="w-5 h-5" />
             Step 2: Regenerate TypeScript Types
-            {isStepCompleted(2) && <Badge className="bg-success/20 text-success">Completed</Badge>}
+            {isStepCompleted(2) && <Badge className="bg-success/20 text-success hover:bg-success/30 hover:shadow-lg hover:shadow-success/20 hover:scale-105 transition-all duration-200 cursor-pointer">Completed</Badge>}
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -185,7 +185,7 @@ ON CONFLICT (token_value) DO NOTHING;`;
           <CardTitle className="flex items-center gap-2">
             <Zap className="w-5 h-5" />
             Step 3: Enable Enhanced Features
-            {isStepCompleted(3) && <Badge className="bg-success/20 text-success">Completed</Badge>}
+            {isStepCompleted(3) && <Badge className="bg-success/20 text-success hover:bg-success/30 hover:shadow-lg hover:shadow-success/20 hover:scale-105 transition-all duration-200 cursor-pointer">Completed</Badge>}
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -220,7 +220,7 @@ ON CONFLICT (token_value) DO NOTHING;`;
           <CardTitle className="flex items-center gap-2 text-success">
             <CheckCircle className="w-5 h-5" />
             Step 4: All Features Active!
-            {isStepCompleted(4) && <Badge className="bg-success/20 text-success">Ready</Badge>}
+            {isStepCompleted(4) && <Badge className="bg-success/20 text-success hover:bg-success/30 hover:shadow-lg hover:shadow-success/20 hover:scale-105 transition-all duration-200 cursor-pointer">Ready</Badge>}
           </CardTitle>
         </CardHeader>
         <CardContent>

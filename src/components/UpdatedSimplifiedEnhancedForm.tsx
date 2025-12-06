@@ -35,6 +35,7 @@ interface FormData {
     max: number | null;
   };
   skipDuplicates: boolean;
+  intentSignals: string;
 }
 
 // Available lead data fields that can be used in custom variable prompts
@@ -87,7 +88,8 @@ export function UpdatedSimplifiedEnhancedForm({ onSubmissionSuccess }: UpdatedSi
       min: null,
       max: null
     },
-    skipDuplicates: false
+    skipDuplicates: false,
+    intentSignals: ''
   });
 
   // Research System Prompt
@@ -556,6 +558,11 @@ IMPORTANT: If you cannot generate a message, return an empty string.`);
         submissionData.append('skipDuplicates', 'true');
       }
 
+      // Add intent signals if provided
+      if (formData.intentSignals.trim()) {
+        submissionData.append('intentSignals', formData.intentSignals.trim());
+      }
+
       if (formData.leadSource === 'apollo') {
         submissionData.append('apolloUrl', formData.apolloUrl);
         submissionData.append('leadCount', formData.leadCount.toString());
@@ -629,7 +636,8 @@ IMPORTANT: If you cannot generate a message, return an empty string.`);
             revenueFilterEnabled: formData.revenueFilter.enabled,
             revenueMin: formData.revenueFilter.min,
             revenueMax: formData.revenueFilter.max,
-            skipDuplicates: formData.skipDuplicates
+            skipDuplicates: formData.skipDuplicates,
+            intentSignals: formData.intentSignals.trim() || undefined
           };
 
           const backendResponse = await agaBackend.processCampaign(backendRequest);
@@ -1209,6 +1217,35 @@ IMPORTANT: If you cannot generate a message, return an empty string.`);
                       }
                     />
                   </div>
+                </div>
+              </Card>
+
+              {/* Intent Signals */}
+              <Card className="p-4 sm:p-6 glass-card border-pink-500/20 hover:border-pink-500/40 hover:shadow-xl hover:shadow-pink-500/20 transition-all duration-300">
+                <div className="space-y-4">
+                  <div className="flex items-center gap-2">
+                    <div className="w-2 h-2 bg-pink-500 rounded-full animate-pulse"></div>
+                    <Label htmlFor="intentSignals" className="text-base sm:text-lg font-semibold text-pink-900 dark:text-pink-100">
+                      Intent Signals (Optional)
+                    </Label>
+                  </div>
+                  <p className="text-xs sm:text-sm text-pink-700 dark:text-pink-300 mb-3">
+                    Describe what you're looking for in a lead. AI will research and only process leads that meet your criteria, saving you credits.
+                  </p>
+                  <Textarea
+                    id="intentSignals"
+                    placeholder='e.g., "Looking for companies that recently raised Series A funding and are hiring for sales roles" or "Companies using Salesforce but complaining about it on social media"'
+                    value={formData.intentSignals}
+                    onChange={(e) => setFormData(prev => ({ ...prev, intentSignals: e.target.value }))}
+                    className="bg-white dark:bg-gray-900 border-pink-300 dark:border-pink-700 min-h-[100px] transition-all hover:border-pink-400 dark:hover:border-pink-600"
+                  />
+                  {formData.intentSignals.trim() && (
+                    <div className="p-3 bg-pink-50 dark:bg-pink-950/30 border border-pink-200 dark:border-pink-800 rounded-lg">
+                      <p className="text-xs text-pink-700 dark:text-pink-300">
+                        <strong>Note:</strong> Each lead will be researched to check if they meet your intent signals before personalization. This may take longer but ensures higher quality leads.
+                      </p>
+                    </div>
+                  )}
                 </div>
               </Card>
 

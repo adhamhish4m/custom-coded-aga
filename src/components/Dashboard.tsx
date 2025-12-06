@@ -327,14 +327,14 @@ export function Dashboard() {
     }
 
     const statusMap: Record<string, { label: string; className: string }> = {
-      'completed': { label: 'Completed', className: 'bg-success/20 text-success-foreground border-success/20' },
-      'in_queue': { label: queuePosition ? `Queue #${queuePosition}` : 'In Queue', className: 'bg-blue-500/20 text-blue-400 border-blue-500/20' },
-      'extracting': { label: 'Extracting Leads', className: 'bg-warning/20 text-warning-foreground border-warning/20' },
-      'personalizing': { label: statusLabel || 'Personalizing', className: 'bg-warning/20 text-warning-foreground border-warning/20' },
-      'processing': { label: 'Processing', className: 'bg-warning/20 text-warning-foreground border-warning/20' },
-      'failed': { label: 'Failed', className: 'bg-destructive/20 text-destructive-foreground border-destructive/20' },
-      'cancelled': { label: 'Cancelled', className: 'bg-muted/20 text-muted-foreground border-muted/20' },
-      'pending': { label: 'Pending', className: 'bg-muted/20 text-muted-foreground border-muted/20' }
+      'completed': { label: 'Completed', className: 'bg-success/20 text-success-foreground border-success/20 hover:bg-success/30 hover:border-success/40 hover:shadow-lg hover:shadow-success/20 hover:scale-105 transition-all duration-200 cursor-pointer' },
+      'in_queue': { label: queuePosition ? `Queue #${queuePosition}` : 'In Queue', className: 'bg-blue-500/20 text-blue-400 border-blue-500/20 hover:bg-blue-500/30 hover:border-blue-500/40 hover:shadow-lg hover:shadow-blue-500/20 hover:scale-105 transition-all duration-200 cursor-pointer' },
+      'extracting': { label: 'Extracting Leads', className: 'bg-warning/20 text-warning-foreground border-warning/20 hover:bg-warning/30 hover:border-warning/40 hover:shadow-lg hover:shadow-warning/20 hover:scale-105 transition-all duration-200 cursor-pointer' },
+      'personalizing': { label: statusLabel || 'Personalizing', className: 'bg-warning/20 text-warning-foreground border-warning/20 hover:bg-warning/30 hover:border-warning/40 hover:shadow-lg hover:shadow-warning/20 hover:scale-105 transition-all duration-200 cursor-pointer' },
+      'processing': { label: 'Processing', className: 'bg-warning/20 text-warning-foreground border-warning/20 hover:bg-warning/30 hover:border-warning/40 hover:shadow-lg hover:shadow-warning/20 hover:scale-105 transition-all duration-200 cursor-pointer' },
+      'failed': { label: 'Failed', className: 'bg-destructive/20 text-destructive-foreground border-destructive/20 hover:bg-destructive/30 hover:border-destructive/40 hover:shadow-lg hover:shadow-destructive/20 hover:scale-105 transition-all duration-200 cursor-pointer' },
+      'cancelled': { label: 'Cancelled', className: 'bg-muted/20 text-muted-foreground border-muted/20 hover:bg-muted/30 hover:border-muted/40 hover:shadow-lg hover:shadow-muted/20 hover:scale-105 transition-all duration-200 cursor-pointer' },
+      'pending': { label: 'Pending', className: 'bg-muted/20 text-muted-foreground border-muted/20 hover:bg-muted/30 hover:border-muted/40 hover:shadow-lg hover:shadow-muted/20 hover:scale-105 transition-all duration-200 cursor-pointer' }
     };
 
     // Special case for "check instantly campaign" - make it a clickable link
@@ -344,7 +344,7 @@ export function Dashboard() {
           href={`https://app.instantly.ai/app/campaign/${runId}/leads`}
           target="_blank"
           rel="noopener noreferrer"
-          className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-primary/20 text-primary-foreground border border-primary/20 hover:bg-primary/30 transition-colors cursor-pointer"
+          className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-primary/20 text-primary-foreground border border-primary/20 hover:bg-primary/30 hover:border-primary/40 hover:shadow-lg hover:shadow-primary/20 hover:scale-105 transition-all duration-200 cursor-pointer"
         >
           Check Instantly Campaign
         </a>

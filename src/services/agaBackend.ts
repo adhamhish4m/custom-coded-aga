@@ -35,6 +35,7 @@ export interface CampaignProcessRequest {
   revenueMin?: number | null;
   revenueMax?: number | null;
   skipDuplicates?: boolean;
+  intentSignals?: string;
 }
 
 export interface CampaignProcessResponse {

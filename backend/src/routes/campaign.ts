@@ -55,7 +55,8 @@ router.post('/process', upload.single('csv_file'), async (req: Request, res: Res
       revenueFilterEnabled,
       revenueMin,
       revenueMax,
-      skipDuplicates
+      skipDuplicates,
+      intentSignals
     } = req.body;
 
     // Generate run_id if not provided
@@ -97,7 +98,8 @@ router.post('/process', upload.single('csv_file'), async (req: Request, res: Res
       revenueFilterEnabled: revenueFilterEnabled === 'true' || revenueFilterEnabled === true,
       revenueMin: revenueMin ? parseFloat(revenueMin) : undefined,
       revenueMax: revenueMax ? parseFloat(revenueMax) : undefined,
-      skipDuplicates: skipDuplicates === 'true' || skipDuplicates === true
+      skipDuplicates: skipDuplicates === 'true' || skipDuplicates === true,
+      intentSignals: intentSignals && typeof intentSignals === 'string' && intentSignals.trim() ? intentSignals.trim() : undefined
     };
 
     // Validate input

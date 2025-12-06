@@ -558,17 +558,17 @@ export function SimplifiedCampaignPage() {
 
   const getStatusBadge = (status: string) => {
     const statusMap: Record<string, { label: string; className: string }> = {
-      'completed': { label: 'Completed', className: 'bg-success/20 text-success-foreground border-success/20' },
-      'in_queue': { label: 'In Queue', className: 'bg-info/20 text-info-foreground border-info/20' },
-      'extracting': { label: 'Extracting Leads', className: 'bg-warning/20 text-warning-foreground border-warning/20' },
-      'personalizing': { label: 'Personalizing', className: 'bg-warning/20 text-warning-foreground border-warning/20' },
-      'processing': { label: 'Processing', className: 'bg-warning/20 text-warning-foreground border-warning/20' },
-      'failed': { label: 'Failed', className: 'bg-destructive/20 text-destructive-foreground border-destructive/20' },
-      'cancelled': { label: 'Cancelled', className: 'bg-muted/20 text-muted-foreground border-muted/20' },
-      'pending': { label: 'Pending', className: 'bg-muted/20 text-muted-foreground border-muted/20' }
+      'completed': { label: 'Completed', className: 'bg-success/20 text-success-foreground border-success/20 hover:bg-success/30 hover:border-success/40 hover:shadow-lg hover:shadow-success/20 hover:scale-105 transition-all duration-200 cursor-pointer' },
+      'in_queue': { label: 'In Queue', className: 'bg-blue-500/20 text-blue-400 border-blue-500/20 hover:bg-blue-500/30 hover:border-blue-500/40 hover:shadow-lg hover:shadow-blue-500/20 hover:scale-105 transition-all duration-200 cursor-pointer' },
+      'extracting': { label: 'Extracting Leads', className: 'bg-warning/20 text-warning-foreground border-warning/20 hover:bg-warning/30 hover:border-warning/40 hover:shadow-lg hover:shadow-warning/20 hover:scale-105 transition-all duration-200 cursor-pointer' },
+      'personalizing': { label: 'Personalizing', className: 'bg-warning/20 text-warning-foreground border-warning/20 hover:bg-warning/30 hover:border-warning/40 hover:shadow-lg hover:shadow-warning/20 hover:scale-105 transition-all duration-200 cursor-pointer' },
+      'processing': { label: 'Processing', className: 'bg-warning/20 text-warning-foreground border-warning/20 hover:bg-warning/30 hover:border-warning/40 hover:shadow-lg hover:shadow-warning/20 hover:scale-105 transition-all duration-200 cursor-pointer' },
+      'failed': { label: 'Failed', className: 'bg-destructive/20 text-destructive-foreground border-destructive/20 hover:bg-destructive/30 hover:border-destructive/40 hover:shadow-lg hover:shadow-destructive/20 hover:scale-105 transition-all duration-200 cursor-pointer' },
+      'cancelled': { label: 'Cancelled', className: 'bg-muted/20 text-muted-foreground border-muted/20 hover:bg-muted/30 hover:border-muted/40 hover:shadow-lg hover:shadow-muted/20 hover:scale-105 transition-all duration-200 cursor-pointer' },
+      'pending': { label: 'Pending', className: 'bg-muted/20 text-muted-foreground border-muted/20 hover:bg-muted/30 hover:border-muted/40 hover:shadow-lg hover:shadow-muted/20 hover:scale-105 transition-all duration-200 cursor-pointer' }
     };
 
-    const statusConfig = statusMap[status?.toLowerCase()] || { label: status || 'Unknown', className: 'bg-muted/20 text-muted-foreground' };
+    const statusConfig = statusMap[status?.toLowerCase()] || { label: status || 'Unknown', className: 'bg-muted/20 text-muted-foreground hover:bg-muted/30 hover:shadow-lg hover:shadow-muted/20 hover:scale-105 transition-all duration-200 cursor-pointer' };
 
     return (
       <Badge className={statusConfig.className}>
@@ -1158,12 +1158,12 @@ export function SimplifiedCampaignPage() {
                           {/* Right side - Status */}
                           <div className="flex-shrink-0 ml-4">
                             {paginatedLead.leadData?.personalized_message || paginatedLead.personalized_message ? (
-                              <Badge className="bg-green-500/20 text-green-300 border-green-500/30 text-xs">
+                              <Badge className="bg-green-500/20 text-green-300 border-green-500/30 text-xs hover:bg-green-500/30 hover:border-green-500/40 hover:shadow-lg hover:shadow-green-500/20 hover:scale-105 transition-all duration-200 cursor-pointer">
                                 <MessageSquare className="w-3 h-3 mr-1" />
                                 Ready
                               </Badge>
                             ) : (
-                              <Badge variant="outline" className="border-yellow-500/30 text-yellow-400 bg-yellow-500/10 text-xs">
+                              <Badge variant="outline" className="border-yellow-500/30 text-yellow-400 bg-yellow-500/10 text-xs hover:bg-yellow-500/20 hover:border-yellow-500/40 hover:shadow-lg hover:shadow-yellow-500/20 hover:scale-105 transition-all duration-200 cursor-pointer">
                                 <MessageSquare className="w-3 h-3 mr-1" />
                                 Pending
                               </Badge>

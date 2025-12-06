@@ -1,5 +1,6 @@
 import { csvProcessorService } from './csv-processor.js';
 import { personalizationService } from './personalization.js';
+import { perplexityService } from './ai/perplexity.js';
 import { supabaseService } from './supabase.js';
 import { slackService } from './slack.js';
 import { env } from '../config/env.js';
@@ -81,6 +82,24 @@ class CampaignOrchestrator {
 
         if (leads.length === 0) {
           throw new Error('No leads remaining after duplicate filter. All leads already exist in your previous campaigns.');
+        }
+      }
+
+      // Apply intent signals filtering if provided
+      if (input.intentSignals && input.intentSignals.trim()) {
+        const originalCount = leads.length;
+        console.log(`🔍 Applying intent signals filter: "${input.intentSignals}"`);
+
+        leads = await this.filterByIntentSignals(
+          leads,
+          input.intentSignals,
+          input.perplexityPrompt
+        );
+
+        console.log(`✓ Intent filter applied: ${originalCount} leads -> ${leads.length} leads (filtered ${originalCount - leads.length} not matching intent)`);
+
+        if (leads.length === 0) {
+          throw new Error('No leads remaining after intent filtering. Try adjusting your intent signals criteria.');
         }
       }
 
@@ -277,6 +296,69 @@ class CampaignOrchestrator {
       // On error, return all leads to avoid blocking the campaign
       return leads;
     }
+  }
+
+  /**
+   * Filter leads based on intent signals using AI research
+   */
+  private async filterByIntentSignals(
+    leads: Lead[],
+    intentSignals: string,
+    perplexityPrompt: string
+  ): Promise<Lead[]> {
+    const matchingLeads: Lead[] = [];
+    const batchSize = 5; // Process 5 leads at a time
+
+    console.log(`Checking ${leads.length} leads against intent signals...`);
+
+    // Process leads in batches
+    for (let i = 0; i < leads.length; i += batchSize) {
+      const batch = leads.slice(i, i + batchSize);
+
+      const batchResults = await Promise.allSettled(
+        batch.map(async (lead) => {
+          try {
+            // Research the lead using Perplexity
+            const intentCheckPrompt = `${perplexityPrompt}\n\nIntent Signals to Check: ${intentSignals}\n\nFor company ${lead.company}, determine if they meet the intent signals. Return ONLY "YES" or "NO" at the start of your response, followed by a brief explanation.`;
+
+            const researchResult = await perplexityService.research({
+              systemPrompt: intentCheckPrompt,
+              userPrompt: `Research ${lead.company}${lead.company_url ? ` (${lead.company_url})` : ''} and determine if they match the intent signals: "${intentSignals}". Start your response with YES or NO.`,
+              lead
+            });
+
+            // Check if the response starts with "YES"
+            const meetsIntent = researchResult.research.trim().toUpperCase().startsWith('YES');
+
+            if (meetsIntent) {
+              console.log(`✓ ${lead.company} (${lead.email}) MATCHES intent signals`);
+              return { lead, matches: true };
+            } else {
+              console.log(`✗ ${lead.company} (${lead.email}) does NOT match intent signals`);
+              return { lead, matches: false };
+            }
+          } catch (error) {
+            console.error(`Error checking intent for ${lead.email}:`, error);
+            // On error, include the lead to avoid blocking
+            return { lead, matches: true };
+          }
+        })
+      );
+
+      // Collect matching leads
+      for (const result of batchResults) {
+        if (result.status === 'fulfilled' && result.value.matches) {
+          matchingLeads.push(result.value.lead);
+        }
+      }
+
+      // Small delay between batches to respect API limits
+      if (i + batchSize < leads.length) {
+        await new Promise(resolve => setTimeout(resolve, 1000));
+      }
+    }
+
+    return matchingLeads;
   }
 
   /**

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Upload, Rocket, Loader2, AlertTriangle, CheckCircle, XCircle, Clock, Plus, X } from 'lucide-react';
+import { Upload, Rocket, Loader2, AlertTriangle, CheckCircle, XCircle, Clock, Plus, X, Check } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -990,27 +990,43 @@ IMPORTANT: If you cannot generate a message, return an empty string.`);
                 </div>
               </Card>
 
-              {/* Research System Prompt */}
-              <Card className="p-4 sm:p-6 glass-card border-blue-500/20 hover:border-blue-500/40 hover:shadow-xl hover:shadow-blue-500/20 transition-all duration-300">
-                <div className="space-y-4">
-                  <div className="flex items-center gap-2 mb-2">
-                    <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></div>
-                    <Label htmlFor="researchSystemPrompt" className="text-base sm:text-lg font-semibold text-blue-900 dark:text-blue-100">
-                      Research System Prompt
-                    </Label>
+              {/* Research System Prompt - Only shown when NOT using intent signals */}
+              {!formData.intentSignals.trim() ? (
+                <Card className="p-4 sm:p-6 glass-card border-blue-500/20 hover:border-blue-500/40 hover:shadow-xl hover:shadow-blue-500/20 transition-all duration-300">
+                  <div className="space-y-4">
+                    <div className="flex items-center gap-2 mb-2">
+                      <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></div>
+                      <Label htmlFor="researchSystemPrompt" className="text-base sm:text-lg font-semibold text-blue-900 dark:text-blue-100">
+                        Research System Prompt
+                      </Label>
+                    </div>
+                    <p className="text-xs sm:text-sm text-blue-700 dark:text-blue-300 mb-3">
+                      This prompt guides Perplexity to research each lead before personalization.
+                    </p>
+                    <Textarea
+                      id="researchSystemPrompt"
+                      placeholder="Enter your research system prompt..."
+                      value={researchSystemPrompt}
+                      onChange={(e) => setResearchSystemPrompt(e.target.value)}
+                      className="bg-white dark:bg-gray-900 border-2 border-blue-300 dark:border-blue-700 min-h-[250px] font-mono text-xs sm:text-sm focus:ring-2 focus:ring-blue-500 hover:border-blue-400 transition-all duration-300"
+                    />
                   </div>
-                  <p className="text-xs sm:text-sm text-blue-700 dark:text-blue-300 mb-3">
-                    This prompt guides Perplexity to research each lead before personalization.
-                  </p>
-                  <Textarea
-                    id="researchSystemPrompt"
-                    placeholder="Enter your research system prompt..."
-                    value={researchSystemPrompt}
-                    onChange={(e) => setResearchSystemPrompt(e.target.value)}
-                    className="bg-white dark:bg-gray-900 border-2 border-blue-300 dark:border-blue-700 min-h-[250px] font-mono text-xs sm:text-sm focus:ring-2 focus:ring-blue-500 hover:border-blue-400 transition-all duration-300"
-                  />
-                </div>
-              </Card>
+                </Card>
+              ) : (
+                <Card className="p-4 sm:p-6 glass-card border-green-500/20 bg-green-50 dark:bg-green-950/30">
+                  <div className="space-y-3">
+                    <div className="flex items-center gap-2">
+                      <CheckCircle className="w-5 h-5 text-green-600 dark:text-green-400" />
+                      <Label className="text-base sm:text-lg font-semibold text-green-900 dark:text-green-100">
+                        Research Optimization Active
+                      </Label>
+                    </div>
+                    <p className="text-xs sm:text-sm text-green-700 dark:text-green-300">
+                      <strong>💰 Saving Credits:</strong> Since you're using intent signals, the AI research from qualification will be automatically reused for personalization. You don't need a separate research prompt - we'll use the research gathered during intent matching!
+                    </p>
+                  </div>
+                </Card>
+              )}
 
               {/* Personalization System Prompt */}
               <Card className="p-4 sm:p-6 glass-card border-purple-500/20 hover:border-purple-500/40 hover:shadow-xl hover:shadow-purple-500/20 transition-all duration-300">

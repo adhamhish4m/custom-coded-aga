@@ -300,16 +300,18 @@ class CampaignOrchestrator {
 
   /**
    * Filter leads based on intent signals using AI research
+   * Also stores research data with qualified leads to reuse in personalization (saves credits!)
    */
   private async filterByIntentSignals(
     leads: Lead[],
     intentSignals: string,
     perplexityPrompt: string
-  ): Promise<Lead[]> {
-    const matchingLeads: Lead[] = [];
+  ): Promise<Array<Lead & { intent_research?: string }>> {
+    const matchingLeads: Array<Lead & { intent_research?: string }> = [];
     const batchSize = 5; // Process 5 leads at a time
 
     console.log(`Checking ${leads.length} leads against intent signals...`);
+    console.log(`💡 Research from intent qualification will be reused for personalization to save credits`);
 
     // Process leads in batches
     for (let i = 0; i < leads.length; i += batchSize) {
@@ -318,12 +320,12 @@ class CampaignOrchestrator {
       const batchResults = await Promise.allSettled(
         batch.map(async (lead) => {
           try {
-            // Research the lead using Perplexity
-            const intentCheckPrompt = `${perplexityPrompt}\n\nIntent Signals to Check: ${intentSignals}\n\nFor company ${lead.company}, determine if they meet the intent signals. Return ONLY "YES" or "NO" at the start of your response, followed by a brief explanation.`;
+            // Research the lead using Perplexity - combine intent check with useful personalization info
+            const intentCheckPrompt = `${perplexityPrompt}\n\nIntent Signals to Check: ${intentSignals}\n\nFirst, determine if company ${lead.company} meets these intent signals and start your response with "YES" or "NO".\n\nThen, regardless of your answer, provide detailed research about the company that would be useful for personalized outreach (recent news, achievements, key information, etc.). This research will be used for personalization if the lead qualifies.`;
 
             const researchResult = await perplexityService.research({
               systemPrompt: intentCheckPrompt,
-              userPrompt: `Research ${lead.company}${lead.company_url ? ` (${lead.company_url})` : ''} and determine if they match the intent signals: "${intentSignals}". Start your response with YES or NO.`,
+              userPrompt: `Research ${lead.company}${lead.company_url ? ` (${lead.company_url})` : ''} and determine if they match the intent signals: "${intentSignals}". Start with YES or NO, then provide useful research about the company.`,
               lead
             });
 
@@ -331,8 +333,9 @@ class CampaignOrchestrator {
             const meetsIntent = researchResult.research.trim().toUpperCase().startsWith('YES');
 
             if (meetsIntent) {
-              console.log(`✓ ${lead.company} (${lead.email}) MATCHES intent signals`);
-              return { lead, matches: true };
+              console.log(`✓ ${lead.company} (${lead.email}) MATCHES intent signals (research saved for personalization)`);
+              // Attach the research to the lead for reuse in personalization
+              return { lead: { ...lead, intent_research: researchResult.research }, matches: true };
             } else {
               console.log(`✗ ${lead.company} (${lead.email}) does NOT match intent signals`);
               return { lead, matches: false };
@@ -345,7 +348,7 @@ class CampaignOrchestrator {
         })
       );
 
-      // Collect matching leads
+      // Collect matching leads (with research attached)
       for (const result of batchResults) {
         if (result.status === 'fulfilled' && result.value.matches) {
           matchingLeads.push(result.value.lead);

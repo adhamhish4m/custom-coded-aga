@@ -31,22 +31,31 @@ class PersonalizationService {
     };
 
     try {
-      // Step 1: Perplexity research
-      console.log(`Researching ${lead.company} for ${lead.email}...`);
+      // Step 1: Perplexity research (or reuse intent research if available)
       let research = '';
 
-      try {
-        const perplexityResponse = await perplexityService.research({
-          systemPrompt: config.perplexityPrompt,
-          userPrompt: this.buildPerplexityUserPrompt(lead),
-          lead
-        });
-        research = perplexityResponse.research;
+      // Check if lead already has research from intent qualification
+      const leadWithIntent = lead as Lead & { intent_research?: string };
+      if (leadWithIntent.intent_research) {
+        console.log(`📋 Reusing intent research for ${lead.company} (${lead.email}) - skipping Perplexity call to save credits`);
+        research = leadWithIntent.intent_research;
         enrichedLead.perplexity_research = research;
-      } catch (error) {
-        console.error(`Perplexity research failed for ${lead.email}:`, error);
-        // Continue with empty research - Claude can still personalize
-        research = `Unable to fetch research for ${lead.company}. Using available lead information only.`;
+      } else {
+        // No intent research available, do normal research
+        console.log(`🔍 Researching ${lead.company} for ${lead.email}...`);
+        try {
+          const perplexityResponse = await perplexityService.research({
+            systemPrompt: config.perplexityPrompt,
+            userPrompt: this.buildPerplexityUserPrompt(lead),
+            lead
+          });
+          research = perplexityResponse.research;
+          enrichedLead.perplexity_research = research;
+        } catch (error) {
+          console.error(`Perplexity research failed for ${lead.email}:`, error);
+          // Continue with empty research - Claude can still personalize
+          research = `Unable to fetch research for ${lead.company}. Using available lead information only.`;
+        }
       }
 
       // Step 2: Claude personalization

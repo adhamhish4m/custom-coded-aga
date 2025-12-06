@@ -228,6 +228,47 @@ class SupabaseService {
 
     return data as AGARunProgress;
   }
+
+  /**
+   * Get all existing email addresses from user's previous campaigns
+   * Returns a Set of lowercase, trimmed email addresses
+   */
+  async getExistingEmailsForUser(userId: string, currentCampaignLeadsId: string): Promise<Set<string>> {
+    try {
+      // Fetch all campaign_leads for this user by joining with campaigns table
+      const { data, error } = await this.client
+        .from('campaign_leads')
+        .select('lead_data, campaigns!inner(user_id)')
+        .eq('campaigns.user_id', userId)
+        .neq('id', currentCampaignLeadsId);
+
+      if (error) {
+        console.error('Error fetching existing campaigns:', error);
+        return new Set();
+      }
+
+      // Extract all email addresses from lead_data arrays
+      const existingEmails = new Set<string>();
+
+      if (data && Array.isArray(data)) {
+        for (const row of data) {
+          if (row.lead_data && Array.isArray(row.lead_data)) {
+            for (const lead of row.lead_data) {
+              if (lead.email) {
+                // Normalize email: lowercase and trim
+                existingEmails.add(lead.email.toLowerCase().trim());
+              }
+            }
+          }
+        }
+      }
+
+      return existingEmails;
+    } catch (error) {
+      console.error('Error in getExistingEmailsForUser:', error);
+      return new Set();
+    }
+  }
 }
 
 export const supabaseService = new SupabaseService();

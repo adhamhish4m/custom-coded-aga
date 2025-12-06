@@ -34,6 +34,7 @@ export interface CampaignProcessRequest {
   revenueFilterEnabled?: boolean;
   revenueMin?: number | null;
   revenueMax?: number | null;
+  skipDuplicates?: boolean;
 }
 
 export interface CampaignProcessResponse {

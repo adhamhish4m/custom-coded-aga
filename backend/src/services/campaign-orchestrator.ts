@@ -73,6 +73,17 @@ class CampaignOrchestrator {
         }
       }
 
+      // Apply duplicate detection if enabled
+      if (input.skipDuplicates) {
+        const originalCount = leads.length;
+        leads = await this.filterDuplicateEmails(leads, user_id, campaign_leads_id);
+        console.log(`✓ Duplicate filter applied: ${originalCount} leads -> ${leads.length} leads (filtered ${originalCount - leads.length} duplicates)`);
+
+        if (leads.length === 0) {
+          throw new Error('No leads remaining after duplicate filter. All leads already exist in your previous campaigns.');
+        }
+      }
+
       console.log(`✓ Processing ${leads.length} leads`);
 
       // Step 3: Update status to "personalizing" and set lead_count
@@ -234,6 +245,38 @@ class CampaignOrchestrator {
 
       return true;
     });
+  }
+
+  /**
+   * Filter out duplicate emails that exist in user's previous campaigns
+   */
+  private async filterDuplicateEmails(leads: Lead[], userId: string, currentCampaignLeadsId: string): Promise<Lead[]> {
+    try {
+      // Fetch all previous campaign_leads for this user (excluding the current one)
+      const existingEmails = await supabaseService.getExistingEmailsForUser(userId, currentCampaignLeadsId);
+
+      if (existingEmails.size === 0) {
+        console.log('No existing emails found in previous campaigns');
+        return leads;
+      }
+
+      console.log(`Found ${existingEmails.size} existing emails in previous campaigns`);
+
+      // Filter out leads whose emails already exist
+      const filteredLeads = leads.filter(lead => {
+        const email = lead.email?.toLowerCase().trim();
+        if (!email) {
+          return false; // Exclude leads without email
+        }
+        return !existingEmails.has(email);
+      });
+
+      return filteredLeads;
+    } catch (error) {
+      console.error('Error filtering duplicate emails:', error);
+      // On error, return all leads to avoid blocking the campaign
+      return leads;
+    }
   }
 
   /**

@@ -34,6 +34,7 @@ interface FormData {
     min: number | null;
     max: number | null;
   };
+  skipDuplicates: boolean;
 }
 
 // Available lead data fields that can be used in custom variable prompts
@@ -85,7 +86,8 @@ export function UpdatedSimplifiedEnhancedForm({ onSubmissionSuccess }: UpdatedSi
       enabled: false,
       min: null,
       max: null
-    }
+    },
+    skipDuplicates: false
   });
 
   // Research System Prompt
@@ -549,6 +551,11 @@ IMPORTANT: If you cannot generate a message, return an empty string.`);
         }
       }
 
+      // Add skip duplicates flag
+      if (formData.skipDuplicates) {
+        submissionData.append('skipDuplicates', 'true');
+      }
+
       if (formData.leadSource === 'apollo') {
         submissionData.append('apolloUrl', formData.apolloUrl);
         submissionData.append('leadCount', formData.leadCount.toString());
@@ -621,7 +628,8 @@ IMPORTANT: If you cannot generate a message, return an empty string.`);
             customVariables: validCustomVariables,
             revenueFilterEnabled: formData.revenueFilter.enabled,
             revenueMin: formData.revenueFilter.min,
-            revenueMax: formData.revenueFilter.max
+            revenueMax: formData.revenueFilter.max,
+            skipDuplicates: formData.skipDuplicates
           };
 
           const backendResponse = await agaBackend.processCampaign(backendRequest);
@@ -1175,6 +1183,32 @@ IMPORTANT: If you cannot generate a message, return an empty string.`);
                       </div>
                     </div>
                   )}
+                </div>
+              </Card>
+
+              {/* Duplicate Detection */}
+              <Card className="p-4 sm:p-6 glass-card border-cyan-500/20 hover:border-cyan-500/40 hover:shadow-xl hover:shadow-cyan-500/20 transition-all duration-300">
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <div className="space-y-1">
+                      <div className="flex items-center gap-2">
+                        <div className="w-2 h-2 bg-cyan-500 rounded-full animate-pulse"></div>
+                        <Label htmlFor="skipDuplicates" className="text-base sm:text-lg font-semibold text-cyan-900 dark:text-cyan-100">
+                          Skip Duplicate Emails
+                        </Label>
+                      </div>
+                      <p className="text-xs sm:text-sm text-cyan-700 dark:text-cyan-300">
+                        Automatically skip leads with email addresses that already exist in your previous campaigns
+                      </p>
+                    </div>
+                    <Switch
+                      id="skipDuplicates"
+                      checked={formData.skipDuplicates}
+                      onCheckedChange={(checked) =>
+                        setFormData(prev => ({ ...prev, skipDuplicates: checked }))
+                      }
+                    />
+                  </div>
                 </div>
               </Card>
 

@@ -54,7 +54,8 @@ router.post('/process', upload.single('csv_file'), async (req: Request, res: Res
       customVariables,
       revenueFilterEnabled,
       revenueMin,
-      revenueMax
+      revenueMax,
+      skipDuplicates
     } = req.body;
 
     // Generate run_id if not provided
@@ -95,7 +96,8 @@ router.post('/process', upload.single('csv_file'), async (req: Request, res: Res
       })(),
       revenueFilterEnabled: revenueFilterEnabled === 'true' || revenueFilterEnabled === true,
       revenueMin: revenueMin ? parseFloat(revenueMin) : undefined,
-      revenueMax: revenueMax ? parseFloat(revenueMax) : undefined
+      revenueMax: revenueMax ? parseFloat(revenueMax) : undefined,
+      skipDuplicates: skipDuplicates === 'true' || skipDuplicates === true
     };
 
     // Validate input

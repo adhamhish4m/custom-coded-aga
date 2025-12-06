@@ -76,6 +76,7 @@ export interface CampaignInput {
   revenueFilterEnabled?: boolean;
   revenueMin?: number;
   revenueMax?: number;
+  skipDuplicates?: boolean;
 }
 
 export interface PerplexityRequest {

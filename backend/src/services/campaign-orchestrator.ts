@@ -90,10 +90,23 @@ class CampaignOrchestrator {
         const originalCount = leads.length;
         console.log(`🔍 Applying intent signals filter: "${input.intentSignals}"`);
 
+        // Update status to "qualifying"
+        await supabaseService.updateRunStatus(
+          run_id,
+          campaign_id,
+          user_id,
+          'qualifying',
+          undefined,
+          { lead_count: originalCount, processed_count: 0 }
+        );
+
         leads = await this.filterByIntentSignals(
           leads,
           input.intentSignals,
-          input.perplexityPrompt
+          input.perplexityPrompt,
+          run_id,
+          campaign_id,
+          user_id
         );
 
         console.log(`✓ Intent filter applied: ${originalCount} leads -> ${leads.length} leads (filtered ${originalCount - leads.length} not matching intent)`);
@@ -305,10 +318,14 @@ class CampaignOrchestrator {
   private async filterByIntentSignals(
     leads: Lead[],
     intentSignals: string,
-    perplexityPrompt: string
+    perplexityPrompt: string,
+    runId: string,
+    campaignId: string,
+    userId: string
   ): Promise<Array<Lead & { intent_research?: string }>> {
     const matchingLeads: Array<Lead & { intent_research?: string }> = [];
     const batchSize = 5; // Process 5 leads at a time
+    let processedCount = 0;
 
     console.log(`Checking ${leads.length} leads against intent signals...`);
     console.log(`💡 Research from intent qualification will be reused for personalization to save credits`);
@@ -354,6 +371,17 @@ class CampaignOrchestrator {
           matchingLeads.push(result.value.lead);
         }
       }
+
+      // Update progress after each batch
+      processedCount += batch.length;
+      await supabaseService.updateRunStatus(
+        runId,
+        campaignId,
+        userId,
+        'qualifying',
+        undefined,
+        { lead_count: leads.length, processed_count: processedCount, qualified_count: matchingLeads.length }
+      );
 
       // Small delay between batches to respect API limits
       if (i + batchSize < leads.length) {

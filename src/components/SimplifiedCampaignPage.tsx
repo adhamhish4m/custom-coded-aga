@@ -556,12 +556,30 @@ export function SimplifiedCampaignPage() {
     setCurrentPage(1); // Reset to first page when changing page size
   };
 
-  const getStatusBadge = (status: string) => {
+  const getStatusBadge = (status: string, processedCount?: number, leadCount?: number, qualifiedCount?: number) => {
+    const batchSize = 10;
+    let statusLabel = '';
+
+    // Calculate percentage for qualifying status
+    if (status?.toLowerCase() === 'qualifying' && processedCount !== undefined && leadCount && leadCount > 0) {
+      const percentage = Math.round((processedCount / leadCount) * 100);
+      statusLabel = `Qualifying (${processedCount}/${leadCount} - ${percentage}%)`;
+    }
+
+    // Calculate percentage for personalizing status
+    if (status?.toLowerCase() === 'personalizing' && processedCount !== undefined && leadCount && leadCount > 0) {
+      const currentBatch = Math.ceil((processedCount + 1) / batchSize);
+      const totalBatches = Math.ceil(leadCount / batchSize);
+      const percentage = Math.round((processedCount / leadCount) * 100);
+      statusLabel = `Personalizing (${processedCount}/${leadCount} - ${percentage}%)`;
+    }
+
     const statusMap: Record<string, { label: string; className: string }> = {
       'completed': { label: 'Completed', className: 'bg-success/20 text-success-foreground border-success/20 hover:bg-success/30 hover:border-success/40 hover:shadow-lg hover:shadow-success/20 hover:scale-105 transition-all duration-200 cursor-pointer' },
       'in_queue': { label: 'In Queue', className: 'bg-blue-500/20 text-blue-400 border-blue-500/20 hover:bg-blue-500/30 hover:border-blue-500/40 hover:shadow-lg hover:shadow-blue-500/20 hover:scale-105 transition-all duration-200 cursor-pointer' },
       'extracting': { label: 'Extracting Leads', className: 'bg-warning/20 text-warning-foreground border-warning/20 hover:bg-warning/30 hover:border-warning/40 hover:shadow-lg hover:shadow-warning/20 hover:scale-105 transition-all duration-200 cursor-pointer' },
-      'personalizing': { label: 'Personalizing', className: 'bg-warning/20 text-warning-foreground border-warning/20 hover:bg-warning/30 hover:border-warning/40 hover:shadow-lg hover:shadow-warning/20 hover:scale-105 transition-all duration-200 cursor-pointer' },
+      'qualifying': { label: statusLabel || 'Qualifying', className: 'bg-pink-500/20 text-pink-400 border-pink-500/20 hover:bg-pink-500/30 hover:border-pink-500/40 hover:shadow-lg hover:shadow-pink-500/20 hover:scale-105 transition-all duration-200 cursor-pointer' },
+      'personalizing': { label: statusLabel || 'Personalizing', className: 'bg-warning/20 text-warning-foreground border-warning/20 hover:bg-warning/30 hover:border-warning/40 hover:shadow-lg hover:shadow-warning/20 hover:scale-105 transition-all duration-200 cursor-pointer' },
       'processing': { label: 'Processing', className: 'bg-warning/20 text-warning-foreground border-warning/20 hover:bg-warning/30 hover:border-warning/40 hover:shadow-lg hover:shadow-warning/20 hover:scale-105 transition-all duration-200 cursor-pointer' },
       'failed': { label: 'Failed', className: 'bg-destructive/20 text-destructive-foreground border-destructive/20 hover:bg-destructive/30 hover:border-destructive/40 hover:shadow-lg hover:shadow-destructive/20 hover:scale-105 transition-all duration-200 cursor-pointer' },
       'cancelled': { label: 'Cancelled', className: 'bg-muted/20 text-muted-foreground border-muted/20 hover:bg-muted/30 hover:border-muted/40 hover:shadow-lg hover:shadow-muted/20 hover:scale-105 transition-all duration-200 cursor-pointer' },
@@ -633,7 +651,11 @@ export function SimplifiedCampaignPage() {
                 <div className="flex-1">
                   <div className="flex flex-wrap items-center gap-3 mb-3">
                     <h1 className="text-2xl sm:text-3xl font-bold">{campaign.name}</h1>
-                    {getStatusBadge(agaRunStatus?.status || campaign.status || 'unknown')}
+                    {getStatusBadge(
+                      agaRunStatus?.status || campaign.status || 'unknown',
+                      agaRunStatus?.processed_count || undefined,
+                      agaRunStatus?.lead_count || undefined
+                    )}
                     {(agaRunStatus?.status || campaign.status || '').includes('500') && (
                       <Button
                         variant="outline"
@@ -772,7 +794,16 @@ export function SimplifiedCampaignPage() {
                     <p className="text-xl sm:text-2xl font-bold">
                       {agaRunStatus?.status?.toLowerCase() === 'completed'
                         ? 'Completed'
-                        : agaRunStatus?.processed_count || 0}
+                        : (() => {
+                            const processedCount = agaRunStatus?.processed_count || 0;
+                            const leadCount = agaRunStatus?.lead_count || 0;
+                            if (leadCount > 0 && processedCount > 0) {
+                              const percentage = Math.round((processedCount / leadCount) * 100);
+                              return `${percentage}%`;
+                            }
+                            return processedCount;
+                          })()
+                      }
                     </p>
                   </div>
                 </div>

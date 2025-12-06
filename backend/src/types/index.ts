@@ -143,12 +143,13 @@ export interface CampaignRun {
   id: string;
   campaign_id: string;
   user_id: string;
-  status: 'pending' | 'in_queue' | 'extracting' | 'personalizing' | 'processing' | 'completed' | 'failed' | 'cancelled';
+  status: 'pending' | 'in_queue' | 'extracting' | 'qualifying' | 'personalizing' | 'processing' | 'completed' | 'failed' | 'cancelled';
   source: string | null;
   lead_count: number | null;
   processed_count: number;
   success_count: number;
   error_count: number;
+  qualified_count?: number;
   error_message: string | null;
   started_at: string | null;
   completed_at: string | null;

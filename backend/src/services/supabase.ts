@@ -179,6 +179,7 @@ class SupabaseService {
       processed_count?: number;
       success_count?: number;
       error_count?: number;
+      qualified_count?: number;
     }
   ): Promise<boolean> {
     const updateData: Partial<AGARunProgress> = {
@@ -195,6 +196,7 @@ class SupabaseService {
       if (counts.processed_count !== undefined) updateData.processed_count = counts.processed_count;
       if (counts.success_count !== undefined) updateData.success_count = counts.success_count;
       if (counts.error_count !== undefined) updateData.error_count = counts.error_count;
+      if (counts.qualified_count !== undefined) updateData.qualified_count = counts.qualified_count;
     }
 
     const { error } = await this.client

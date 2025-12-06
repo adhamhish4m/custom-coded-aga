@@ -211,6 +211,8 @@ Lead Information:
 - Name: ${lead.first_name} ${lead.last_name}
 - Job Title: ${lead.job_title || 'Not specified'}
 - Company: ${lead.company}
+- Company Website: ${lead.company_url || 'Not specified'}
+- LinkedIn: ${lead.linkedin_url || 'Not specified'}
 - Industry: ${lead.company_industry || 'Not specified'}
 - Location: ${lead.location || 'Not specified'}
 - Company Size: ${lead.company_headcount || 'Not specified'}

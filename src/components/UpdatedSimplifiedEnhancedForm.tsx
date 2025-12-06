@@ -39,20 +39,12 @@ interface FormData {
 }
 
 // Available lead data fields that can be used in custom variable prompts
+// Note: Fields already provided to AI automatically (name, job title, company, website, LinkedIn, industry, location, company size) are excluded
 const AVAILABLE_LEAD_FIELDS = [
-  { name: 'first_name', label: 'First Name', category: 'Person' },
-  { name: 'last_name', label: 'Last Name', category: 'Person' },
   { name: 'email', label: 'Email', category: 'Person' },
-  { name: 'job_title', label: 'Job Title', category: 'Person' },
-  { name: 'linkedin_url', label: 'LinkedIn URL', category: 'Person' },
   { name: 'headline', label: 'Headline', category: 'Person' },
-  { name: 'location', label: 'Location', category: 'Person' },
   { name: 'phone_number', label: 'Phone Number', category: 'Person' },
-  { name: 'company', label: 'Company Name', category: 'Company' },
-  { name: 'company_url', label: 'Company Website', category: 'Company' },
   { name: 'company_linkedin_url', label: 'Company LinkedIn', category: 'Company' },
-  { name: 'company_industry', label: 'Industry', category: 'Company' },
-  { name: 'company_headcount', label: 'Employee Count', category: 'Company' },
   { name: 'company_state', label: 'Company State', category: 'Company' },
   { name: 'company_city', label: 'Company City', category: 'Company' },
   { name: 'company_country', label: 'Company Country', category: 'Company' },

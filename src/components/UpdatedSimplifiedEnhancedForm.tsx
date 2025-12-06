@@ -68,13 +68,7 @@ export function UpdatedSimplifiedEnhancedForm({ onSubmissionSuccess }: UpdatedSi
     leadCount: 500,
     campaignName: '',
     notifyOnComplete: false,
-    customVariables: [
-      {
-        id: crypto.randomUUID(),
-        name: 'personalized_sentence',
-        prompt: 'Create a personalized icebreaker sentence about the company (max 25 words)'
-      }
-    ],
+    customVariables: [],
     revenueFilter: {
       enabled: false,
       min: null,
@@ -967,6 +961,35 @@ IMPORTANT: If you cannot generate a message, return an empty string.`);
                 </div>
               )}
 
+              {/* Intent Signals */}
+              <Card className="p-4 sm:p-6 glass-card border-pink-500/20 hover:border-pink-500/40 hover:shadow-xl hover:shadow-pink-500/20 transition-all duration-300">
+                <div className="space-y-4">
+                  <div className="flex items-center gap-2">
+                    <div className="w-2 h-2 bg-pink-500 rounded-full animate-pulse"></div>
+                    <Label htmlFor="intentSignals" className="text-base sm:text-lg font-semibold text-pink-900 dark:text-pink-100">
+                      Intent Signals (Optional)
+                    </Label>
+                  </div>
+                  <p className="text-xs sm:text-sm text-pink-700 dark:text-pink-300 mb-3">
+                    Describe what you're looking for in a lead. AI will research and only process leads that meet your criteria, saving you credits.
+                  </p>
+                  <Textarea
+                    id="intentSignals"
+                    placeholder='e.g., "Looking for companies that recently raised Series A funding and are hiring for sales roles" or "Companies using Salesforce but complaining about it on social media"'
+                    value={formData.intentSignals}
+                    onChange={(e) => setFormData(prev => ({ ...prev, intentSignals: e.target.value }))}
+                    className="bg-white dark:bg-gray-900 border-pink-300 dark:border-pink-700 min-h-[100px] transition-all hover:border-pink-400 dark:hover:border-pink-600"
+                  />
+                  {formData.intentSignals.trim() && (
+                    <div className="p-3 bg-pink-50 dark:bg-pink-950/30 border border-pink-200 dark:border-pink-800 rounded-lg">
+                      <p className="text-xs text-pink-700 dark:text-pink-300">
+                        <strong>Note:</strong> Each lead will be researched to check if they meet your intent signals before personalization. This may take longer but ensures higher quality leads.
+                      </p>
+                    </div>
+                  )}
+                </div>
+              </Card>
+
               {/* Research System Prompt */}
               <Card className="p-4 sm:p-6 glass-card border-blue-500/20 hover:border-blue-500/40 hover:shadow-xl hover:shadow-blue-500/20 transition-all duration-300">
                 <div className="space-y-4">
@@ -1011,35 +1034,6 @@ IMPORTANT: If you cannot generate a message, return an empty string.`);
                 </div>
               </Card>
 
-              {/* Intent Signals */}
-              <Card className="p-4 sm:p-6 glass-card border-pink-500/20 hover:border-pink-500/40 hover:shadow-xl hover:shadow-pink-500/20 transition-all duration-300">
-                <div className="space-y-4">
-                  <div className="flex items-center gap-2">
-                    <div className="w-2 h-2 bg-pink-500 rounded-full animate-pulse"></div>
-                    <Label htmlFor="intentSignals" className="text-base sm:text-lg font-semibold text-pink-900 dark:text-pink-100">
-                      Intent Signals (Optional)
-                    </Label>
-                  </div>
-                  <p className="text-xs sm:text-sm text-pink-700 dark:text-pink-300 mb-3">
-                    Describe what you're looking for in a lead. AI will research and only process leads that meet your criteria, saving you credits.
-                  </p>
-                  <Textarea
-                    id="intentSignals"
-                    placeholder='e.g., "Looking for companies that recently raised Series A funding and are hiring for sales roles" or "Companies using Salesforce but complaining about it on social media"'
-                    value={formData.intentSignals}
-                    onChange={(e) => setFormData(prev => ({ ...prev, intentSignals: e.target.value }))}
-                    className="bg-white dark:bg-gray-900 border-pink-300 dark:border-pink-700 min-h-[100px] transition-all hover:border-pink-400 dark:hover:border-pink-600"
-                  />
-                  {formData.intentSignals.trim() && (
-                    <div className="p-3 bg-pink-50 dark:bg-pink-950/30 border border-pink-200 dark:border-pink-800 rounded-lg">
-                      <p className="text-xs text-pink-700 dark:text-pink-300">
-                        <strong>Note:</strong> Each lead will be researched to check if they meet your intent signals before personalization. This may take longer but ensures higher quality leads.
-                      </p>
-                    </div>
-                  )}
-                </div>
-              </Card>
-
               {/* Custom Variables */}
               <Card className="p-4 sm:p-6 glass-card border-indigo-500/20 hover:border-indigo-500/40 hover:shadow-xl hover:shadow-indigo-500/20 transition-all duration-300">
                 <div className="space-y-4">
@@ -1047,7 +1041,7 @@ IMPORTANT: If you cannot generate a message, return an empty string.`);
                     <div className="flex items-center gap-2">
                       <div className="w-2 h-2 bg-indigo-500 rounded-full animate-pulse"></div>
                       <Label className="text-base sm:text-lg font-semibold text-indigo-900 dark:text-indigo-100">
-                        Custom Variables
+                        Custom Variables (Optional)
                       </Label>
                     </div>
                     <Button
@@ -1062,28 +1056,36 @@ IMPORTANT: If you cannot generate a message, return an empty string.`);
                     </Button>
                   </div>
                   <p className="text-xs sm:text-sm text-indigo-700 dark:text-indigo-300 mb-3">
-                    Define custom AI-generated variables to enrich your outreach. Examples: "problem", "pain_point", "solution_fit"
+                    Optionally define custom AI-generated variables beyond the personalized message. Examples: "pain_point", "solution_fit", "competitor_weakness"
                   </p>
 
 
-                  <div className="space-y-3">
-                    {formData.customVariables.map((variable, index) => (
+                  {formData.customVariables.length === 0 ? (
+                    <div className="p-6 bg-indigo-50 dark:bg-indigo-950/30 border border-indigo-200 dark:border-indigo-800 rounded-lg text-center">
+                      <p className="text-sm text-indigo-700 dark:text-indigo-300 mb-3">
+                        No custom variables added yet. The AI will generate a personalized message by default.
+                      </p>
+                      <p className="text-xs text-indigo-600 dark:text-indigo-400">
+                        Click "Add Variable" above to create additional custom fields like pain points, competitor analysis, or solution fit.
+                      </p>
+                    </div>
+                  ) : (
+                    <div className="space-y-3">
+                      {formData.customVariables.map((variable, index) => (
                       <div key={variable.id} className="border border-indigo-200 dark:border-indigo-800 rounded-lg p-4 space-y-3">
                         <div className="flex items-center justify-between mb-2">
                           <span className="text-sm font-medium text-indigo-900 dark:text-indigo-100">
                             Variable {index + 1}
                           </span>
-                          {formData.customVariables.length > 1 && (
-                            <Button
-                              type="button"
-                              onClick={() => removeCustomVariable(variable.id)}
-                              variant="ghost"
-                              size="sm"
-                              className="text-red-500 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-950"
-                            >
-                              <X className="w-4 h-4" />
-                            </Button>
-                          )}
+                          <Button
+                            type="button"
+                            onClick={() => removeCustomVariable(variable.id)}
+                            variant="ghost"
+                            size="sm"
+                            className="text-red-500 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-950"
+                          >
+                            <X className="w-4 h-4" />
+                          </Button>
                         </div>
 
                         <div className="space-y-2">
@@ -1130,7 +1132,8 @@ IMPORTANT: If you cannot generate a message, return an empty string.`);
                         </div>
                       </div>
                     ))}
-                  </div>
+                    </div>
+                  )}
                 </div>
               </Card>
 
